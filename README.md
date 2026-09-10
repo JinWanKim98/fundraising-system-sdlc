@@ -161,10 +161,14 @@ story, test plans, Taiga board snapshots at the start and end of each sprint, an
 contribution table. `docs/user_stories_and_assignment.docx` is the working document that assigned
 the stories in blocks of six, which is where #37–42 are recorded as mine.
 
-The last page of the report carries two links the team used and I have left intact: the repository
-the programming team pushed to, and a recording of the finished system being demonstrated. The
-recording is the only place the application can be seen running without checking this repository
-out, and the team repository is where the 289 commits behind two months of work actually sit.
+The last page of the report carries two links the team used, and they are worth pulling out here:
+
+- **[Demo recording](https://drive.google.com/file/d/1OYmXwJ3rjCA6FSy77S3lpcyCjugkHag9/view?usp=sharing)**
+  — the finished system being walked through. This is the only place the application can be seen
+  running without checking the repository out.
+- **[The team repository](https://github.com/Anythingsaf22/CSIT314-SDM)** — where the programming
+  team pushed. Two months of work sit there as 289 commits, which is the part of this project a
+  static snapshot cannot show.
 
 **Teammates are named throughout, because who did what is the entire point of a contribution
 table.** What is removed is the part that carries no credit and identifies a person outside this
