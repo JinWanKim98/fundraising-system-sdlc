@@ -161,14 +161,10 @@ story, test plans, Taiga board snapshots at the start and end of each sprint, an
 contribution table. `docs/user_stories_and_assignment.docx` is the working document that assigned
 the stories in blocks of six, which is where #37–42 are recorded as mine.
 
-The last page of the report carries two links the team used, and they are worth pulling out here:
+Two links from the last page of the report:
 
-- **[Demo recording](https://drive.google.com/file/d/1OYmXwJ3rjCA6FSy77S3lpcyCjugkHag9/view?usp=sharing)**
-  — the finished system being walked through. This is the only place the application can be seen
-  running without checking the repository out.
-- **[The team repository](https://github.com/Anythingsaf22/CSIT314-SDM)** — where the programming
-  team pushed. Two months of work sit there as 289 commits, which is the part of this project a
-  static snapshot cannot show.
+- [Demo recording](https://drive.google.com/file/d/1OYmXwJ3rjCA6FSy77S3lpcyCjugkHag9/view?usp=sharing) — the system being walked through.
+- [Team repository](https://github.com/Anythingsaf22/CSIT314-SDM) — where the programming team pushed.
 
 **Teammates are named throughout, because who did what is the entire point of a contribution
 table.** What is removed is the part that carries no credit and identifies a person outside this
@@ -259,8 +255,7 @@ Group project, six members, CSIT 314 at UOW (SIM Singapore), Semester 2 2026. Th
 in the team's shared repository at
 [github.com/Anythingsaf22/CSIT314-SDM](https://github.com/Anythingsaf22/CSIT314-SDM); this
 repository is my copy of the submitted deliverable, published with the documentation, with my own
-contribution identified. The demo recording is linked above rather than committed — the file is
-131 MB, which does not belong in a repository.
+contribution identified. The demo recording is linked above rather than committed; the file is 131 MB.
 
 ### Limitations
 
