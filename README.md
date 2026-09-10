@@ -233,8 +233,10 @@ Then open `http://127.0.0.1:5000/login`. The database ships seeded with 102 acco
 |---|---|---|
 | User Admin | `aaronlim` | `pass101` |
 | Fundraiser | `alextan` | `pass106` |
-| Donor | `sarahlim` | `pass151` |
-| **Platform Management** — the screens behind my stories | `helenaf` | `pass191` |
+| Donor | `leahtan` | `pass169` |
+| **Platform Management** — the screens behind my stories | `ivanlee` | `pass192` |
+
+These are the four the team's own `README_project.md` documents.
 
 The role selected in the dropdown must match the account's stored profile, or the login is rejected;
 that check is the reason the login use case has a sequence diagram of its own. Passwords are stored
