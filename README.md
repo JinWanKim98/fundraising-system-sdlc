@@ -259,7 +259,8 @@ Group project, six members, CSIT 314 at UOW (SIM Singapore), Semester 2 2026. Th
 in the team's shared repository at
 [github.com/Anythingsaf22/CSIT314-SDM](https://github.com/Anythingsaf22/CSIT314-SDM); this
 repository is my copy of the submitted deliverable, published with the documentation, with my own
-contribution identified. The demo video recorded by the team is not included here.
+contribution identified. The demo recording is linked above rather than committed — the file is
+131 MB, which does not belong in a repository.
 
 ### Limitations
 
