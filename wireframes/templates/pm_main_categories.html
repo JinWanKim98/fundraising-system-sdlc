@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Categories - Platform Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #fff; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .content { padding: 30px; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .search-group { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .search-group input { padding: 8px; border: 1px solid black; width: 250px; }
+        .btn-black { background: black; color: white; padding: 8px 18px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; display: inline-block; font-size: 13px; }
+        .btn-black:hover { background: #333; }
+        .btn-outline { background: white; color: black; border: 1px solid black; padding: 8px 18px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        table { width: 100%; border-collapse: collapse; border: 1px solid black; margin-top: 10px; }
+        th { background: #d9d9d9; border: 1px solid black; padding: 12px; text-align: left; font-weight: bold; }
+        td { border: 1px solid black; padding: 12px; font-weight: bold; font-size: 14px; vertical-align: middle; }
+        .actions { display: flex; gap: 8px; }
+        .flash-success { background: #e6f4ea; border: 1px solid #2e7d32; padding: 15px; color: #2e7d32; margin-top: 20px; display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .check-icon { background: #2e7d32; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-box { background: white; border: 1px solid black; padding: 25px; width: 400px; text-align: center; }
+        .modal-footer { margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+
+    <nav>
+        <a href="{{ url_for('auth.pm_categories') }}" class="active">Categories</a>
+        <a href="{{ url_for('auth.pm_reports') }}">Reports</a>
+    </nav>
+
+    <div class="content">
+        <h3>Fundraising Activity Categories</h3>
+
+        <div class="toolbar">
+            <div class="search-group">
+                Search Categories: 
+                <input type="text" placeholder="Enter category name...">
+                <button class="btn-black">SEARCH</button>
+            </div>
+            <a href="{{ url_for('auth.pm_create_category') }}" class="btn-black">+ Create New</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 200px;">Category Name</th>
+                    <th>Description</th>
+                    <th style="width: 200px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Medical</td>
+                    <td>Funding healthcare services, hospital treatments, and patient support programs</td>
+                    <td>
+                        <div class="actions">
+                            <a href="{{ url_for('auth.pm_edit_category', cat='medical') }}" class="btn-black">Update</a>
+                            <button class="btn-black" onclick="openModal('Medical')">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Education</td>
+                    <td>Providing resources for school supplies, tuition assistance, and learning initiatives</td>
+                    <td>
+                        <div class="actions">
+                            <a href="{{ url_for('auth.pm_edit_category', cat='education') }}" class="btn-black">Update</a>
+                            <button class="btn-black" onclick="openModal('Education')">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Environment</td>
+                    <td>Supporting climate action, conservation projects, and wildlife protection efforts</td>
+                    <td>
+                        <div class="actions">
+                            <a href="{{ url_for('auth.pm_edit_category', cat='environment') }}" class="btn-black">Update</a>
+                            <button class="btn-black" onclick="openModal('Environment')">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Flash Message Placeholder -->
+        <div id="flash-msg" class="flash-success" style="display: none;">
+            <div class="check-icon">✓</div>
+            <span id="flash-text">Success: "Category updated successfully"</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box">
+            <p style="font-weight: bold; font-size: 18px; margin-bottom: 5px;">Are you sure?</p>
+            <p>This will permanently delete "<span id="catName"></span>".</p>
+            <div class="modal-footer">
+                <button class="btn-black" onclick="confirmDelete()">Yes, Delete</button>
+                <button class="btn-outline" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(name) {
+            document.getElementById('catName').innerText = name;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+        function confirmDelete() {
+            // Redirect to show deletion success message
+            window.location.href = "{{ url_for('auth.pm_categories') }}?success=true&type=delete";
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.has('success')) {
+            const type = urlParams.get('type');
+            const flashText = document.getElementById('flash-text');
+            const flashMsg = document.getElementById('flash-msg');
+            
+            if (type === 'create') {
+                flashText.innerText = 'Success: "Category created successfully"';
+            } else if (type === 'delete') {
+                flashText.innerText = 'Success: "Category deleted successfully"';
+            } else {
+                flashText.innerText = 'Success: "Category updated successfully"';
+            }
+            
+            flashMsg.style.display = 'flex';
+
+            setTimeout(() => {
+                flashMsg.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

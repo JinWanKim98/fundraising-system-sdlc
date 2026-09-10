@@ -1,0 +1,5 @@
+profile_id,profile_name,profile_desc
+1,USER_ADMIN,Administrative profile
+2,FUNDRAISER,Can create and manage fundraising activities
+3,DONOR,"Can search, favourite, and donate"
+4,PLATFORM_MANAGEMENT,Can manage categories and reports

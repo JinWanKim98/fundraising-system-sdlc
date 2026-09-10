@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Performance Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #fff; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .content { padding: 30px; }
+        .btn-back { background: #d9d9d9; color: black; border: 1px solid black; padding: 5px 15px; text-decoration: none; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #d9d9d9; padding: 12px; border: 1px solid #000; text-align: left; }
+        td { padding: 12px; border: 1px solid #000; }
+        .summary { border-top: 1px solid black; margin-top: 30px; padding-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <div class="content">
+        <a href="{{ url_for('auth.fundraiser_history') }}" class="btn-back"><< Back to History</a>
+        
+        <!-- ID added for dynamic title -->
+        <h3 id="report-title">Performance Report</h3>
+        
+        <table>
+            <thead>
+                <tr><th>Donor Name</th><th>Donation Amount</th><th>Date</th><th>Region</th></tr>
+            </thead>
+            <!-- ID added for dynamic rows -->
+            <tbody id="report-data">
+                <!-- Rows will be injected here -->
+            </tbody>
+        </table>
+        
+        <div class="summary">
+            <h4>Summary:</h4>
+            <ul id="summary-list">
+                <!-- Summary items will be injected here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Data for the prototype
+        const data = {
+            winter: {
+                title: "Performance Report – Winter Shelter Fund Donations",
+                rows: [
+                    ["John Tan", "$100", "10/01/26", "SG-West"],
+                    ["Aisha Lee", "$250", "11/01/26", "SG-East"]
+                ],
+                summary: ["Total Donations: $350", "Unique Donors: 2"]
+            },
+            earthquake: {
+                title: "Performance Report – Earthquake Relief Donations",
+                rows: [
+                    ["Siti Aminah", "$500", "02/02/26", "SG-North"],
+                    ["David Lim", "$150", "04/02/26", "SG-Central"]
+                ],
+                summary: ["Total Donations: $650", "Unique Donors: 2"]
+            }
+        };
+
+        // Get the 'type' from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const type = urlParams.get('type') || 'winter'; // Default to winter
+
+        // Apply data to the page
+        const selected = data[type];
+        document.getElementById('report-title').innerText = selected.title;
+        
+        const tableBody = document.getElementById('report-data');
+        tableBody.innerHTML = selected.rows.map(row => 
+            `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
+        ).join('');
+
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = selected.summary.map(item => `<li>${item}</li>`).join('');
+    </script>
+</body>
+</html>

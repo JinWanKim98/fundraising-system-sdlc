@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Account</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: white; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .main { padding: 30px; }
+        .main h2 { font-size: 24px; color: #5a5a5a; margin: 0 0 20px; }
+        .search-row { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+        .search-row form { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: bold; }
+        .search-row input { width: 220px; height: 28px; border: 1px solid #777; border-radius: 3px; padding: 0 8px; }
+        .search-btn { background: #000; color: white; border: none; border-radius: 4px; height: 32px; width: 90px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .table-actions { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 8px; }
+        .table-box { width: 100%; border: 1px solid #777; border-radius: 4px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        thead { background: #d9d9d9; }
+        th { text-align: left; padding: 12px; border-bottom: 1px solid #000; }
+        td { padding: 12px; border-bottom: 1px solid #ccc; font-weight: bold; vertical-align: top; }
+        .message { padding: 12px; margin-bottom: 16px; border: 1px solid #777; font-weight: bold; }
+        .message.success { background: #e6f4ea; color: #2e7d32; border-color: #2e7d32; }
+        .message.error { background: #fdecea; color: #c62828; border-color: #c62828; }
+        .status-text { width: 100px; display: inline-block; }
+        .status-active { color: green; font-weight: bold; }
+        .status-deactivated { color: red; font-weight: bold; }
+        .status-expired { color: #8a5a00; font-weight: bold; }
+        .action-btn { background: #000; color: white; border: none; border-radius: 4px; padding: 6px 12px; font-weight: bold; cursor: pointer; margin-right: 4px; text-decoration: none; display: inline-block; }
+        .add-btn { background: #2b2b2b; color: white; border: none; border-radius: 6px; padding: 10px 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
+        .empty-row { text-align: center; color: #666; }
+        .suspend-toggle { width: 42px; height: 22px; border: none; border-radius: 22px; padding: 3px; position: relative; cursor: pointer; background: #111; vertical-align: middle; }
+        .suspend-toggle::before { content: ""; position: absolute; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: white; transition: left 0.2s ease; }
+        .suspend-toggle.is-active { opacity: 0.35; }
+        .suspend-toggle.is-active::before { left: 4px; }
+        .suspend-toggle.is-suspended { opacity: 1; cursor: not-allowed; }
+        .suspend-toggle.is-suspended::before { left: 24px; }
+        .suspend-toggle.is-disabled { opacity: 0.18; cursor: not-allowed; }
+        .suspend-toggle.is-disabled::before { left: 4px; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); justify-content: center; align-items: center; z-index: 1000; }
+        .confirm-box { background: #f4f4f4; width: 340px; border-radius: 6px; padding: 20px; text-align: center; border: 1px solid black; color: black; }
+        .confirm-box h3 { margin-top: 0; }
+        .modal-actions { display: flex; gap: 8px; margin-top: 24px; justify-content: center; }
+        .cancel-btn { background: #777; color: white; border: none; border-radius: 4px; height: 32px; width: 90px; cursor: pointer; font-weight: bold; }
+        .modal-box { width: 360px; background: #1f1f1f; color: white; border-radius: 5px; padding: 28px 26px 30px; border: 1px solid black; }
+        .modal-box label { display: block; font-size: 12px; margin: 10px 0 6px; }
+        .modal-box input, .modal-box select { width: 100%; border: none; border-radius: 6px; padding: 8px; height: 34px; box-sizing: border-box; }
+        .modal-box h2 { text-align: center; margin-top: 0; }
+        .white-btn { background: white; color: #333; border-radius: 5px; padding: 8px 14px; cursor: pointer; border: none; font-weight: bold; }
+        .details-box { background: white; width: 360px; border-radius: 4px; padding: 20px; color: #111; border: 1px solid black; }
+        .details-box h3 { margin-top: 0; }
+        .details-box p { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session.get('user_name', 'Guest') }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('user_account.list_accounts') }}" class="active">User Account</a>
+        <a href="{{ url_for('user_profile.list_profiles') }}">User Profile</a>
+    </nav>
+
+    <div class="main">
+        <h2>All User Accounts</h2>
+
+        {% with messages = get_flashed_messages(with_categories = true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="search-row">
+            <form method="get" action="{{ url_for('user_account.list_accounts') }}">
+                <label for="search">Search Accounts:</label>
+                <input
+                    type="text"
+                    id="search"
+                    name="search"
+                    placeholder="Name, username, contact, or status"
+                    value="{{ search_term }}"
+                >
+                <button class="search-btn" type="submit">SEARCH</button>
+                <a class="search-btn" href="{{ url_for('user_account.list_accounts') }}">CLEAR</a>
+            </form>
+        </div>
+
+        <div class="table-actions">
+            <button class="add-btn" type="button" onclick="openCreateAccountModal()">+ Add New User Account</button>
+        </div>
+
+        <div class="table-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account ID</th>
+                        <th>Full Name</th>
+                        <th>Username</th>
+                        <th>Contact</th>
+                        <th>Profile ID</th>
+                        <th>Status</th>
+                        <th>Suspend</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if accounts %}
+                        {% for account in accounts %}
+                            <tr>
+                                <td>{{ account.accountId }}</td>
+                                <td>{{ account.fullName }}</td>
+                                <td>{{ account.userName }}</td>
+                                <td>{{ account.contact_number }}</td>
+                                <td>{{ account.profileId }}</td>
+                                <td>
+                                    {% if account.accountStatus == "ACTIVE" %}
+                                        <span class="status-text status-active">Active</span>
+                                    {% elif account.accountStatus == "SUSPENDED" %}
+                                        <span class="status-text status-deactivated">Suspended</span>
+                                    {% else %}
+                                        <span class="status-text status-expired">{{ account.accountStatus.title() }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if account.accountStatus == "ACTIVE" %}
+                                        <button
+                                            class="suspend-toggle is-active"
+                                            type="button"
+                                            aria-label="Suspend {{ account.fullName }}"
+                                            onclick='openSuspendAccountModal({{ account.accountId|tojson }}, {{ account.fullName|tojson }})'
+                                        ></button>
+                                    {% elif account.accountStatus == "SUSPENDED" %}
+                                        <button class="suspend-toggle is-suspended" type="button" disabled></button>
+                                    {% else %}
+                                        <button class="suspend-toggle is-disabled" type="button" disabled></button>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button
+                                        class="action-btn"
+                                        type="button"
+                                        onclick='openUpdateAccountModal(
+                                            {{ account.accountId|tojson }},
+                                            {{ account.fullName|tojson }},
+                                            {{ account.userName|tojson }},
+                                            {{ account.passWord|tojson }},
+                                            {{ account.birthday|tojson }},
+                                            {{ account.address|tojson }},
+                                            {{ account.contact_number|tojson }},
+                                            {{ account.profileId|tojson }},
+                                            {{ account.accountStatus|tojson }}
+                                        )'
+                                    >Edit</button>
+                                    <button
+                                        class="action-btn"
+                                        type="button"
+                                        onclick='openViewAccountModal(
+                                            {{ account.accountId|tojson }},
+                                            {{ account.fullName|tojson }},
+                                            {{ account.userName|tojson }},
+                                            {{ account.birthday|tojson }},
+                                            {{ account.address|tojson }},
+                                            {{ account.contact_number|tojson }},
+                                            {{ account.profileId|tojson }},
+                                            {{ account.accountStatus|tojson }},
+                                            {{ account.accountCreatedDate|tojson }}
+                                        )'
+                                    >View</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% elif accounts == 0 %}
+                        <tr>
+                            <td class="empty-row" colspan="8">Search user accounts by name, username, contact number, or status.</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td class="empty-row" colspan="8">No user accounts found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="createAccountModal">
+        <div class="modal-box">
+            <h2>Create User Account</h2>
+            <form method="post" action="{{ url_for('user_account.create_accounts') }}">
+                <label for="createFullName">Full Name</label>
+                <input type="text" id="createFullName" name="full_name" required>
+
+                <label for="createUserName">Username</label>
+                <input type="text" id="createUserName" name="userName" required>
+
+                <label for="createPassword">Password</label>
+                <input type="text" id="createPassword" name="passWord" required>
+
+                <label for="createBirthday">Birthday</label>
+                <input type="date" id="createBirthday" name="birthday">
+
+                <label for="createAddress">Address</label>
+                <input type="text" id="createAddress" name="address">
+
+                <label for="createContactNumber">Contact Number</label>
+                <input type="text" id="createContactNumber" name="contact_number" required>
+
+                <label for="createProfileId">Profile</label>
+                <select id="createProfileId" name="profileId" required>
+                    <option value="">Select</option>
+                    {% for profile in profiles %}
+                        <option value="{{ profile.profileId }}">{{ profile.profileId }} - {{ profile.profileName }}</option>
+                    {% endfor %}
+                </select>
+
+                <div class="modal-actions">
+                    <button class="white-btn" type="submit">Create Account</button>
+                    <button class="cancel-btn" type="button" onclick="closeCreateAccountModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="updateAccountModal">
+        <div class="modal-box">
+            <h2>Update User Account</h2>
+            <form method="post" action="{{ url_for('user_account.update_accounts') }}">
+                <label for="updateAccountId">Account ID</label>
+                <input type="text" id="updateAccountId" name="accountId" readonly required>
+
+                <label for="updateFullName">Full Name</label>
+                <input type="text" id="updateFullName" name="fullName" required>
+
+                <label for="updateUserName">Username</label>
+                <input type="text" id="updateUserName" name="userName" required>
+
+                <label for="updatePassword">Password</label>
+                <input type="text" id="updatePassword" name="password" required>
+
+                <label for="updateBirthday">Birthday</label>
+                <input type="date" id="updateBirthday" name="birthday">
+
+                <label for="updateAddress">Address</label>
+                <input type="text" id="updateAddress" name="address">
+
+                <label for="updateContactNumber">Contact Number</label>
+                <input type="text" id="updateContactNumber" name="contactNumber" required>
+
+                <label for="updateProfileId">Profile</label>
+                <select id="updateProfileId" name="profileId" required>
+                    {% for profile in profiles %}
+                        <option value="{{ profile.profileId }}">{{ profile.profileId }} - {{ profile.profileName }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="updateAccountStatus">Account Status</label>
+                <select id="updateAccountStatus" name="accountStatus" required>
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="SUSPENDED">SUSPENDED</option>
+                    <option value="EXPIRED">EXPIRED</option>
+                </select>
+
+                <div class="modal-actions">
+                    <button class="white-btn" type="submit">Update Account</button>
+                    <button class="cancel-btn" type="button" onclick="closeUpdateAccountModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="viewAccountModal">
+        <div class="details-box">
+            <h3>Account Details</h3>
+            <p>Account ID: <span id="viewAccountId"></span></p>
+            <p>Full Name: <span id="viewAccountName"></span></p>
+            <p>Username: <span id="viewAccountUserName"></span></p>
+            <p>Birthday: <span id="viewAccountBirthday"></span></p>
+            <p>Address: <span id="viewAccountAddress"></span></p>
+            <p>Contact Number: <span id="viewAccountContact"></span></p>
+            <p>Profile ID: <span id="viewAccountProfileId"></span></p>
+            <p>Status: <span id="viewAccountStatus"></span></p>
+            <p>Account Created Date: <span id="viewAccountCreatedDate"></span></p>
+            <div class="modal-actions">
+                <button class="search-btn" type="button" onclick="closeViewAccountModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="suspendAccountModal">
+        <div class="confirm-box">
+            <h3>Are you sure?</h3>
+            <p>
+                This will suspend
+                <strong id="suspendAccountName"></strong>
+                (Account ID: <span id="suspendAccountIdText"></span>).
+            </p>
+            <form method="post" action="{{ url_for('user_account.suspend_account') }}">
+                <input type="hidden" id="suspendAccountId" name="accountId">
+                <div class="modal-actions">
+                    <button class="search-btn" type="submit">Yes</button>
+                    <button class="cancel-btn" type="button" onclick="closeSuspendAccountModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openCreateAccountModal() {
+            document.getElementById("createAccountModal").style.display = "flex";
+        }
+
+        function closeCreateAccountModal() {
+            document.getElementById("createAccountModal").style.display = "none";
+        }
+
+        function openUpdateAccountModal(accountId, fullName, userName, password, birthday, address, contactNumber, profileId, accountStatus) {
+            document.getElementById("updateAccountId").value = accountId;
+            document.getElementById("updateFullName").value = fullName || "";
+            document.getElementById("updateUserName").value = userName || "";
+            document.getElementById("updatePassword").value = password || "";
+            document.getElementById("updateBirthday").value = birthday || "";
+            document.getElementById("updateAddress").value = address || "";
+            document.getElementById("updateContactNumber").value = contactNumber || "";
+            document.getElementById("updateProfileId").value = String(profileId);
+            document.getElementById("updateAccountStatus").value = accountStatus || "ACTIVE";
+            document.getElementById("updateAccountModal").style.display = "flex";
+        }
+
+        function closeUpdateAccountModal() {
+            document.getElementById("updateAccountModal").style.display = "none";
+        }
+
+        function openViewAccountModal(accountId, fullName, userName, birthday, address, contactNumber, profileId, accountStatus, accountCreatedDate) {
+            document.getElementById("viewAccountId").innerText = accountId ?? "";
+            document.getElementById("viewAccountName").innerText = fullName ?? "";
+            document.getElementById("viewAccountUserName").innerText = userName ?? "";
+            document.getElementById("viewAccountBirthday").innerText = birthday ?? "";
+            document.getElementById("viewAccountAddress").innerText = address ?? "";
+            document.getElementById("viewAccountContact").innerText = contactNumber ?? "";
+            document.getElementById("viewAccountProfileId").innerText = profileId ?? "";
+            document.getElementById("viewAccountStatus").innerText = accountStatus ?? "";
+            document.getElementById("viewAccountCreatedDate").innerText = accountCreatedDate ?? "";
+            document.getElementById("viewAccountModal").style.display = "flex";
+        }
+
+        function closeViewAccountModal() {
+            document.getElementById("viewAccountModal").style.display = "none";
+        }
+
+        function openSuspendAccountModal(accountId, accountName) {
+            document.getElementById("suspendAccountId").value = accountId;
+            document.getElementById("suspendAccountIdText").innerText = accountId;
+            document.getElementById("suspendAccountName").innerText = accountName;
+            document.getElementById("suspendAccountModal").style.display = "flex";
+        }
+
+        function closeSuspendAccountModal() {
+            document.getElementById("suspendAccountModal").style.display = "none";
+        }
+    </script>
+</body>
+</html>

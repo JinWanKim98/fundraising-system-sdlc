@@ -1,0 +1,3 @@
+activity_id,account_id,category_id,activity_name,activity_desc,funding_goal,funding_current,activity_status,start_date,end_date
+201,102,1,Help John with Surgery Costs,Raising funds for urgent surgery,10000,2500,ongoing,2026-04-01,2026-06-30
+202,102,2,Support School Supplies for Kids,Providing books and uniforms,5000,1700,ongoing,2026-04-10,2026-07-15

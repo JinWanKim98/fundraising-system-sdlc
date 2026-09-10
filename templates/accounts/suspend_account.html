@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Suspend User Account</title>
+</head>
+<body>
+    <h1>Suspend User Account</h1>
+
+    {% with messages = get_flashed_messages(with_categories = true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p><strong>{{ category }}:</strong> {{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" onsubmit="return confirm('Are you sure you want to suspend this account?');">
+        <div>
+            <label for="accountId">Account ID</label>
+            <input type="text" id="accountId" name="accountId">
+        </div>
+
+        <button type="submit">Suspend</button>
+    </form>
+
+    <p>
+        <a href="{{ url_for('user_account.list_accounts') }}">Back to Accounts</a>
+    </p>
+</body>
+</html>

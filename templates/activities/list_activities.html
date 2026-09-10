@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fundraiser Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+        .header { background: #ddd; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; background: #eee; }
+        .content { padding: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #ddd; padding: 10px; border: 1px solid #ccc; text-align: left; }
+        td { padding: 10px; border: 1px solid #ccc; }
+        .toolbar { margin-bottom: 20px; display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .search-form { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: bold; }
+        .search-form input { padding: 7px; border: 1px solid #777; }
+        .btn { padding: 6px 15px; cursor: pointer; border: none; border-radius: 4px; text-decoration: none; font-size: 14px; display: inline-block; }
+        .btn-black { background: black; color: white; }
+        .btn-view { background: #000; color: white; }
+        .btn-edit { background: #333; color: white; }
+        .btn-delete { background: #b00020; color: white; }
+        .btn-Fav { background: #d4a017; color: white; }
+        .btn-outline { background: white; color: black; border: 1px solid black; padding: 8px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .status-ongoing { color: green; font-weight: bold; }
+        .status-completed { color: #1a4f8f; font-weight: bold; }
+        .status-expired { color: #8a5a00; font-weight: bold; }
+        .status-cancelled { color: #b00020; font-weight: bold; }
+        .message { padding: 12px; margin-bottom: 16px; border: 1px solid #777; font-weight: bold; background: white; }
+        .message.success { background: #e6f4ea; color: #2e7d32; border-color: #2e7d32; }
+        .message.error { background: #fdecea; color: #c62828; border-color: #c62828; }
+        .empty-row { text-align: center; color: #666; font-weight: bold; }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-view { background: white; padding: 25px; border-radius: 8px; width: 550px; text-align: left; border: 1px solid #000; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .modal-view h3 { margin: 0 0 5px 0; font-size: 24px; font-weight: bold; }
+        .modal-view .status-text { font-weight: bold; font-size: 18px; margin-bottom: 15px; }
+        .modal-view .amount-row { display: flex; justify-content: space-between; align-items: center; font-weight: bold; margin-bottom: 5px; }
+        .modal-view .progress-container { background: #ccc; height: 25px; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid #000; margin-bottom: 15px; }
+        .modal-view .progress-fill { background: black; width: 0%; height: 100%; transition: width 0.3s ease; }
+        .modal-view p { margin: 8px 0; font-size: 15px; }
+        .modal-view .section-label { font-weight: bold; }
+        .modal-view .desc-text { line-height: 1.4; margin-bottom: 15px; }
+        .footer-btn { text-align: right; margin-top: 10px; }
+        .modal-simple { background: white; padding: 20px; border-radius: 8px; width: 400px; text-align: center; border: 1px solid #000; }
+        .modal-actions { display: flex; justify-content: center; gap: 10px; margin-top: 18px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session.get('user_name', 'Guest') }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        {% if session.get("profile_id") == 3 %}
+            <a href="{{ url_for('fundraising_activity.list_activities', tab='browse') }}" class="{% if active_tab == 'browse' %}active{% endif %}">Browse Activities</a>
+            <a href="{{ url_for('fundraising_activity.list_activities', tab='favourites') }}" class="{% if active_tab == 'favourites' %}active{% endif %}">Favourites</a>
+            <a href="{{ url_for('fundraising_activity.list_activities', tab='history') }}" class="{% if active_tab == 'history' %}active{% endif %}">History</a>
+        {% else %}
+            <a href="{{ url_for('fundraising_activity.list_activities') }}" class="active">Activities</a>
+            <a href="{{ url_for('fundraising_activity.view_completed_activities') }}">Completed</a>
+        {% endif %}
+    </nav>
+    <div class="content">
+        {% if active_tab == 'favourites' %}
+            <h3>My Favourites List</h3>
+        {% elif active_tab == 'history' %}
+            <h3>My Donation History</h3>
+        {% else %}
+            <h3>Fundraising Activities</h3>
+        {% endif %}
+
+        {% with messages = get_flashed_messages(with_categories = true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if active_tab == 'browse' %}
+        <div class="toolbar">
+            <form class="search-form" method="get" action="{{ url_for('fundraising_activity.list_activities') }}">
+                {% if session.get("profile_id") == 3 %}
+                    <input type="hidden" name="tab" value="browse">
+                {% endif %}
+                <label for="search">Search Activities:</label>
+                <input
+                    type="text"
+                    id="search"
+                    name="search"
+                    placeholder="Name or description"
+                    value="{{ search_term }}"
+                >
+                <button class="btn btn-black" type="submit">SEARCH</button>
+                <a href="{{ url_for('fundraising_activity.list_activities') }}" class="btn btn-outline">CLEAR</a>
+            </form>
+            {% if session.get("profile_id") != 3 %}
+                <a href="{{ url_for('fundraising_activity.create_activity') }}" class="btn btn-black">+ Create New</a>
+            {% endif %}
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Activity Title</th>
+                    <th>Category</th>
+                    <th>Current</th>
+                    <th>Goal</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if activities %}
+                    {% for activity in activities %}
+                        <tr>
+                            <td>{{ activity.activityId }}</td>
+                            <td>{{ activity.activityName }}</td>
+                            <td>{{ activity.categoryName }}</td>
+                            <td>${{ "%.2f"|format(activity.fundingCurrent) }}</td>
+                            <td>${{ "%.2f"|format(activity.fundingGoal) }}</td>
+                            <td>
+                                <span class="status-{{ activity.activityStatus }}">
+                                    {{ activity.activityStatus.title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <button
+                                    class="btn btn-view"
+                                    type="button"
+                                    data-view-count="{{ activity.viewCount }}"
+                                    data-favourite-count="{{ activity.favouriteCount }}"
+                                    onclick='openActivityModal(this,
+                                    {{ activity.activityName|tojson }},
+                                    {{ activity.activityStatus|tojson }},
+                                    {{ activity.fundingCurrent|tojson }},
+                                    {{ activity.fundingGoal|tojson }},
+                                    {{ activity.categoryName|tojson }},
+                                    {{ activity.endDate|tojson }},
+                                    {{ activity.activityDescription|tojson }},
+                                    {{ activity.fundraiserName|tojson }},
+                                    {{ activity.startDate|tojson }},
+                                    {{ activity.favouriteCount|tojson }},
+                                    {{ activity.phoneNumber|tojson }},
+                                    {{ activity.activityId|tojson }}
+                                )'
+                                >   
+                                    View
+                                </button>
+                                {% if session.get("profile_id") != 3 %}
+                                    <a href="{{ url_for('fundraising_activity.update_activity', activityId=activity.activityId) }}" class="btn btn-edit">Edit</a>
+                                    <button
+                                        class="btn btn-delete"
+                                        type="button"
+                                        onclick='openDeleteActivityModal({{ activity.activityId|tojson }}, {{ activity.activityName|tojson }})'
+                                    >
+                                        Delete
+                                    </button>
+                                {% endif %}
+                                {% if session.get("profile_id") == 3 %}
+                                    <button class="btn btn-Fav"
+                                        type="button"
+                                        onclick='openAddFavModal({{ activity.activityId|tojson }}, {{ activity.activityName|tojson }})'> 
+                                        Add to Favourite 
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% elif activities == 0 %}
+                    <tr>
+                        <td class="empty-row" colspan="7">Search fundraising activities by name or description.</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td class="empty-row" colspan="7">No fundraising activities found.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        {% elif active_tab == 'favourites' %}
+            <div class="toolbar">
+                <form class="search-form" method="get" action="{{ url_for('fundraising_activity.list_activities') }}">
+                    <input type="hidden" name="tab" value="favourites">
+                    <label for="search">Search Favourites:</label>
+                    <input
+                        type="text"
+                        id="search"
+                        name="search"
+                        placeholder="Name or description"
+                        value="{{ search_term }}"
+                    >
+                    <button class="btn btn-black" type="submit">SEARCH</button>
+                    <a href="{{ url_for('fundraising_activity.list_activities', tab='favourites') }}" class="btn btn-outline">CLEAR</a>
+                </form>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Activity ID</th>
+                        <th>Activity Name</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Current Progress</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if favourites %}
+                        {% for activity in favourites %}
+                            <tr>
+                                <td>{{ activity.activityId }}</td>
+                                <td>{{ activity.activityName }}</td>
+                                <td>{{ activity.categoryName }}</td>
+                                <td>
+                                    <span class="status-{{ activity.activityStatus|lower }}">
+                                        {{ activity.activityStatus.title() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% set progress = ((activity.fundingCurrent / activity.fundingGoal) * 100)|round|int if activity.fundingGoal else 0 %}
+                                    <strong>{{ progress }}%</strong>
+                                    (${{ "{:,.0f}".format(activity.fundingCurrent) }} / ${{ "{:,.0f}".format(activity.fundingGoal) }})
+                                </td>
+                                <td>
+                                    <button
+                                        class="btn btn-view"
+                                        type="button"
+                                        data-view-count="{{ activity.viewCount }}"
+                                        data-favourite-count="{{ activity.favouriteCount }}"
+                                        onclick='openActivityModal(this,
+                                        {{ activity.activityName|tojson }},
+                                        {{ activity.activityStatus|tojson }},
+                                        {{ activity.fundingCurrent|tojson }},
+                                        {{ activity.fundingGoal|tojson }},
+                                        {{ activity.categoryName|tojson }},
+                                        {{ activity.endDate|tojson }},
+                                        {{ activity.activityDescription|tojson }},
+                                        {{ activity.fundraiserName|tojson }},
+                                        {{ activity.startDate|tojson }},
+                                        {{ activity.favouriteCount|tojson }},
+                                        {{ activity.phoneNumber|tojson }},
+                                        {{ activity.activityId|tojson }}
+                                    )'
+                                    >
+                                        View Details
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="empty-row" colspan="6">No favourite activities found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        {% elif active_tab == 'history' %}
+            <div class="toolbar">
+                <form class="search-form" method="get" action="{{ url_for('fundraising_activity.list_activities') }}">
+                    <input type="hidden" name="tab" value="history">
+                    <label for="search">Search History:</label>
+                    <input
+                        type="text"
+                        id="search"
+                        name="search"
+                        placeholder="Activity name or category"
+                        value="{{ search_term }}"
+                    >
+                    <button class="btn btn-black" type="submit">SEARCH</button>
+                    <a href="{{ url_for('fundraising_activity.list_activities', tab='history') }}" class="btn btn-outline">CLEAR</a>
+                    <div>
+                        Filters: Category:
+                        <select name="categoryId">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                                <option value="{{ category.categoryId }}" {% if category.categoryId|string == categoryId %}selected{% endif %}>{{ category.categoryName }}</option>
+                            {% endfor %}
+                        </select>
+                        Date From: <input type="date" id="dateFrom" name="dateFrom" value="{{ dateFrom }}">
+                        To: <input type="date" id="dateTo" name="dateTo" value="{{ dateTo }}">
+                    </div>
+                    <div>
+                        Amount Min: <input type="text" id="amountMin" name="amountMin" value="{{ amountMin }}">
+                        Max: <input type="text" id="amountMax" name="amountMax" value="{{ amountMax }}">
+                    </div>
+                </form>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Activity Name</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if donations %}
+                        {% for donation in donations %}
+                            <tr>
+                                <td>{{ donation.donationDate }}</td>
+                                <td>{{ donation.activityName }}</td>
+                                <td>{{ donation.activityCategory }}</td>
+                                <td>${{ "%.2f"|format(donation.donationAmount) }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="empty-row" colspan="4">No donations found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <div id="detailsModal" class="modal-overlay">
+        <div class="modal-view">
+            <h3 id="view-title">FRA Details</h3>
+            <div id="view-status" class="status-text"></div>
+            <div class="amount-row"><span>Amount Collected</span><span id="view-amount"></span></div>
+            <div class="progress-container"><div id="view-progress" class="progress-fill"></div></div>
+            <p><span class="section-label">Category:</span> <span id="view-category"></span></p>
+            <p><span class="section-label">Total Views:</span> <span id="view-count"></span></p>
+            <p><span class="section-label">Total Favourites:</span> <span id="favourite-count"></span></p>
+            <p><span class="section-label">Start Date:</span> <span id="view-start-date"></span></p>
+            <p><span class="section-label">End Date:</span> <span id="view-date"></span></p>
+            <p class="section-label">Description</p>
+            <p id="view-description" class="desc-text"></p>
+            <div class="account-section">
+                <p class="section-label">Fundraiser</p>
+                <p>Fundraiser: <span id="view-account"></span></p>
+                <p>Phone Number: <span id="view-phone"></span></p>
+            </div>
+            <div class="footer-btn"><button class="btn-outline" onclick="closeModal('detailsModal')">Close</button></div>
+        </div>
+    </div>
+
+    {% if session.get("profile_id") != 3 %}
+        <div id="deleteModal" class="modal-overlay">
+            <div class="modal-simple">
+                <h3>Are you sure?</h3>
+                <p>
+                    This will permanently delete
+                    "<span id="deleteActivityName"></span>"
+                    (Activity ID: <span id="deleteActivityIdText"></span>).
+                </p>
+                <form method="post" action="{{ url_for('fundraising_activity.delete_activity') }}">
+                    <input type="hidden" id="deleteActivityId" name="activityId">
+                    <div class="modal-actions">
+                        <button class="btn btn-black" type="submit">Yes, Delete</button>
+                        <button class="btn" type="button" style="background:#ccc;" onclick="closeModal('deleteModal')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if session.get("profile_id") == 3 %}
+        <div id="addFavModal" class="modal-overlay">
+            <div class="modal-simple">
+                <h3>Added to Favourites</h3>
+                <p id="addFavMessage"></p>
+                <div class="modal-actions">
+                    <button class="btn btn-black"
+                            type="button"
+                            onclick="closeModal('addFavModal')">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <script>
+        function openActivityModal(
+            button,
+            title,
+            status,
+            collected,
+            goal,
+            category,
+            endDate,
+            desc,
+            fundraiserName,
+            startDate,
+            favouriteCount,
+            phoneNumber,
+            activityId
+        ) {
+
+            document.getElementById("view-title").innerText = "FRA Details: " + title;
+            document.getElementById("view-status").innerText =
+                status.charAt(0).toUpperCase() + status.slice(1);
+
+            document.getElementById("view-amount").innerText =
+                "$" + Number(collected).toFixed(2) +
+                " / $" + Number(goal).toFixed(2);
+
+            document.getElementById("view-category").innerText = category;
+            document.getElementById("view-start-date").innerText = startDate;
+            document.getElementById("view-date").innerText = endDate;
+            document.getElementById("view-description").innerText = desc;
+            document.getElementById("view-account").innerText = fundraiserName;
+            document.getElementById("view-phone").innerText = phoneNumber;
+
+            let currentViewCount = Number(button.dataset.viewCount);
+            currentViewCount += 1;
+
+            button.dataset.viewCount = currentViewCount;
+
+            document.getElementById("view-count").innerText = currentViewCount;
+
+            document.getElementById("favourite-count").innerText = Number(button.dataset.favouriteCount);
+
+            recordView(activityId);
+
+            const percent =
+                goal > 0
+                    ? Math.min((collected / goal) * 100, 100)
+                    : 0;
+
+            document.getElementById("view-progress").style.width = percent + "%";
+
+            document.getElementById("detailsModal").style.display = "flex";
+        }
+
+        {% if session.get("profile_id") != 3 %}
+            function openDeleteActivityModal(activityId, activityName) {
+                document.getElementById("deleteActivityId").value = activityId;
+                document.getElementById("deleteActivityIdText").innerText = activityId;
+                document.getElementById("deleteActivityName").innerText = activityName;
+                document.getElementById("deleteModal").style.display = "flex";
+            }
+        {% endif %}
+
+        {% if session.get("profile_id") == 3 %}
+            function openAddFavModal(activityId, activityName) {
+                fetch("{{ url_for('favourites_list.add_favourite_list') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "activityId=" + encodeURIComponent(activityId)
+                })
+                .then(response => response.json())
+                .then(data => {
+
+                    const msg = document.getElementById("addFavMessage");
+
+                    if (data.success) {
+                        msg.innerText =
+                            `"${activityName}" has been added to your favourite list.`;
+                        const viewButtons = document.querySelectorAll(".btn-view");
+
+                        viewButtons.forEach(button => {
+                            if (button.getAttribute("onclick").includes(activityId)) {
+                                let currentFavCount = Number(button.dataset.favouriteCount);
+                                currentFavCount += 1;
+                                button.dataset.favouriteCount = currentFavCount;
+                            }
+                        });
+                    }
+                    else {
+                        msg.innerText = data.message;
+                    }
+
+                    document.getElementById("addFavModal").style.display = "flex";
+                });
+            }
+        {% endif %}
+
+        function recordView(activityId) {
+            fetch("/activities/recordView/" + activityId, {
+            method: "POST"
+        });
+}
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+    </script>
+</body>
+</html>

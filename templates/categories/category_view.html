@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Fundraising Categories</title>
+</head>
+<body>
+    <h1>View Fundraising Categories</h1>
+    {% if categories %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Category ID</th>
+                    <th>Category Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                    <tr>
+                        <td>{{ category.categoryId }}</td>
+                        <td>{{ category.categoryName }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% with messages = get_flashed_messages(with_categories = true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p><strong>{{ category }}:</strong> {{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <p>
+        <a href="{{ url_for('fundraising_category.create_category') }}">Create Fundraising Category</a>
+    </p>
+    <p>
+        <a href="{{ url_for('fundraising_category.update_category') }}">Update Fundraising Category</a>
+    </p>    
+    <p>
+        <a href="{{ url_for('fundraising_category.delete_category') }}">Delete Fundraising Category</a>
+    </p>    
+    <p>
+        <a href="{{ url_for('fundraising_category.main_page') }}">Back to Categories main page</a>
+    </p>
+</body>
+</html>

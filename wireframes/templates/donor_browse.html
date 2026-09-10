@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Donor Browse</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+        .header { background: #ddd; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; background: #eee; }
+        .content { padding: 20px; }
+        .result-item { border-bottom: 1px solid #ccc; padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        .btn-black { background: black; color: white; padding: 8px 15px; text-decoration: none; cursor:pointer; }
+        .flash-success { background: #e6f4ea; border: 1px solid #2e7d32; padding: 15px; color: #2e7d32; margin-top: 20px; display: none; align-items: center; gap: 10px; font-weight: bold; }
+        .check-icon { background: #2e7d32; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('auth.donor_browse') }}" class="active">Browse Activities</a>
+        <a href="{{ url_for('auth.donor_favorites') }}">Favorites</a>
+        <a href="{{ url_for('auth.donor_history') }}">History</a>
+    </nav>
+    <div class="content">
+        <h3>Find a Cause</h3>
+        <div style="background:#eee; padding:15px; margin-bottom:20px;">
+            Search: <input type="text"> 
+            <button style="background: black; color: white;">SEARCH</button>
+            <br><br>
+            Filters: Category: 
+            <select>
+                <option>All</option>
+                <option>Health</option>
+                <option>Education</option>
+                <option>Environment</option>
+            </select> 
+            Date From: <input type="date">
+            To: <input type="date">
+        </div>
+        
+        <h4>Results:</h4>
+        <div class="result-item">
+            <div>
+                <strong>1. Help the Local Hospital</strong><br>
+                <small>Category: Health | Status: Active | End Date: 31/12/2026</small>
+            </div>
+            <a href="{{ url_for('auth.donor_details') }}?type=hospital" class="btn-black">View Details</a>
+        </div>
+        <div class="result-item">
+            <div>
+                <strong>2. Education for All</strong><br>
+                <small>Category: Education | Status: Active | End Date: 20/10/2026</small>
+            </div>
+            <a href="{{ url_for('auth.donor_details') }}?type=education" class="btn-black">View Details</a>
+        </div>
+        <div class="result-item">
+            <div>
+                <strong>3. Clean Ocean Project</strong><br>
+                <small>Category: Environment | Status: Active | End Date: 15/11/2026</small>
+            </div>
+            <a href="{{ url_for('auth.donor_details') }}?type=ocean" class="btn-black">View Details</a>
+        </div>
+
+        <div id="statusMessage" class="flash-success">
+            <div class="check-icon">✓</div>
+            <span id="statusText">Success: "Added to favorites successfully"</span>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('status');
+        const messageBox = document.getElementById('statusMessage');
+        const messageText = document.getElementById('statusText');
+
+        if (status === 'favorited') {
+            messageBox.style.display = 'flex';
+            setTimeout(() => { messageBox.style.display = 'none'; }, 3000); // 3-second timeout
+        } else if (status === 'donated') {
+            messageText.innerText = 'Success: "Your donation has been processed successfully"';
+            messageBox.style.display = 'flex';
+            setTimeout(() => { messageBox.style.display = 'none'; }, 3000); // 3-second timeout
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Platform Reports</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; font-size: 16px; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .content { display: flex; padding: 30px; gap: 40px; min-height: 80vh; }
+        .sidebar { width: 220px; flex-shrink: 0; }
+        .sidebar-box { border: 1.5px solid black; border-radius: 4px; overflow: hidden; }
+        .sidebar-header { background: black; color: white; padding: 12px; font-weight: bold; }
+        .sidebar-item { display: block; padding: 12px; border-top: 1px solid black; cursor: pointer; font-weight: bold; color: black; text-decoration: none; }
+        .sidebar-item:hover { background: #f5f5f5; }
+        .sidebar-item.active::before { content: "✔"; font-weight: bold; margin-right: 5px; }
+        .main-area { flex: 1; }
+        .report-section { display: none; }
+        .report-section.active { display: block; }
+        h3 { font-size: 22px; margin-top: 0; border-bottom: 1px solid black; padding-bottom: 10px; }
+        .filter-row { margin-bottom: 20px; font-weight: bold; font-size: 15px; }
+        input, select { padding: 6px; border: 1px solid black; margin: 0 10px; }
+        .btn-black { background: black; color: white; padding: 10px 20px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        .report-result { border-top: 1px solid black; margin-top: 20px; padding-top: 10px; }
+        .report-result h4 { font-size: 20px; font-weight: bold; margin: 15px 0; border-bottom: 1px solid black; padding-bottom: 10px; }
+        .metrics-list { list-style: none; padding: 0; }
+        .metrics-list li { padding: 8px 0; font-size: 14px; }
+        .metrics-list span { font-weight: bold; margin-left: 5px; }
+        .message { padding: 12px; margin-bottom: 16px; border-radius: 4px; font-weight: bold; border: 1px solid #777; }
+        .message.success { background: #e6f4ea; color: #2e7d32; border-color: #2e7d32; }
+        .message.error { background: #fdecea; color: #c62828; border-color: #c62828; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session.get('user_name', 'Guest') }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('fundraising_category.main_page') }}">Categories</a>
+        <a href="{{ url_for('platform_report.view_reports') }}" class="active">Reports</a>
+    </nav>
+
+    <div class="content">
+        <div class="sidebar">
+            <div class="sidebar-box">
+                <div class="sidebar-header">Report Type</div>
+                <a class="sidebar-item {% if active_tab == 'daily' %}active{% endif %}" href="{{ url_for('platform_report.view_reports', type='daily') }}">Daily</a>
+                <a class="sidebar-item {% if active_tab == 'weekly' %}active{% endif %}" href="{{ url_for('platform_report.view_reports', type='weekly') }}">Weekly</a>
+                <a class="sidebar-item {% if active_tab == 'monthly' %}active{% endif %}" href="{{ url_for('platform_report.view_reports', type='monthly') }}">Monthly</a>
+            </div>
+        </div>
+
+        <div class="main-area">
+            {% with messages = get_flashed_messages(with_categories = true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div id="section-daily" class="report-section {% if active_tab == 'daily' %}active{% endif %}">
+                <h3>Daily Report</h3>
+                <form method="get" action="{{ url_for('platform_report.view_reports') }}">
+                    <input type="hidden" name="type" value="daily">
+                    <input type="hidden" name="generate" value="1">
+                    <div class="filter-row">1. Select Date: <input type="date" name="dailyDate" value="{{ daily_date }}"></div>
+                    <div class="filter-row">2. <button class="btn-black" type="submit">Generate Report</button></div>
+                </form>
+            </div>
+
+            <div id="section-weekly" class="report-section {% if active_tab == 'weekly' %}active{% endif %}">
+                <h3>Weekly Report</h3>
+                <form method="get" action="{{ url_for('platform_report.view_reports') }}">
+                    <input type="hidden" name="type" value="weekly">
+                    <input type="hidden" name="generate" value="1">
+                    <div class="filter-row">1. Select Range: From <input type="date" name="weeklyFrom" value="{{ weekly_from }}"> To <input type="date" name="weeklyTo" value="{{ weekly_to }}"></div>
+                    <div class="filter-row">2. <button class="btn-black" type="submit">Generate Report</button></div>
+                </form>
+            </div>
+
+            <div id="section-monthly" class="report-section {% if active_tab == 'monthly' %}active{% endif %}">
+                <h3>Monthly Report</h3>
+                <form method="get" action="{{ url_for('platform_report.view_reports') }}">
+                    <input type="hidden" name="type" value="monthly">
+                    <input type="hidden" name="generate" value="1">
+                    <div class="filter-row">1. Select Month:
+                        <select name="monthlyMonth">
+                            <option value="">--Select Month--</option>
+                            <option value="1" {% if monthly_month == '1' %}selected{% endif %}>January</option>
+                            <option value="2" {% if monthly_month == '2' %}selected{% endif %}>February</option>
+                            <option value="3" {% if monthly_month == '3' %}selected{% endif %}>March</option>
+                            <option value="4" {% if monthly_month == '4' %}selected{% endif %}>April</option>
+                            <option value="5" {% if monthly_month == '5' %}selected{% endif %}>May</option>
+                            <option value="6" {% if monthly_month == '6' %}selected{% endif %}>June</option>
+                            <option value="7" {% if monthly_month == '7' %}selected{% endif %}>July</option>
+                            <option value="8" {% if monthly_month == '8' %}selected{% endif %}>August</option>
+                            <option value="9" {% if monthly_month == '9' %}selected{% endif %}>September</option>
+                            <option value="10" {% if monthly_month == '10' %}selected{% endif %}>October</option>
+                            <option value="11" {% if monthly_month == '11' %}selected{% endif %}>November</option>
+                            <option value="12" {% if monthly_month == '12' %}selected{% endif %}>December</option>
+                        </select>
+                        Year: <input type="number" name="monthlyYear" value="{{ monthly_year }}" placeholder="YYYY" style="width: 80px;">
+                    </div>
+                    <div class="filter-row">2. <button class="btn-black" type="submit">Generate Report</button></div>
+                </form>
+            </div>
+
+            {% if report %}
+                <div class="report-result">
+                    <h4>{{ report.reportTitle }}</h4>
+                    <p><strong>Metrics Summary</strong></p>
+                    <ul class="metrics-list">
+                        <li>1. Total Donations Collected: <span>${{ "%.2f"|format(report.totalDonationsCollected) }}</span></li>
+                        <li>2. Total User Logins: <span>{{ report.totalUserLogins }}</span></li>
+                        <li>3. Total Active Fundraising Activities: <span>{{ report.totalActiveFundraisingActivities }}</span></li>
+                        <li>4. Total Completed Activities: <span>{{ report.totalCompletedActivities }}</span></li>
+                        <li>5. Most Active Category: <span>{{ report.mostActiveCategory or "N/A" }}</span></li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

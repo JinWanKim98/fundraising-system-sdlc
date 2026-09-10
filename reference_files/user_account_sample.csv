@@ -1,0 +1,4 @@
+account_id,full_name,username,password,DOB,address,contact_num,profile_id,account_status
+101,Sarah Lim,sarahlim,pass123,2002-05-14,123 Tampines Street 1,81234567,3,ACTIVE
+102,Alex Tan,alextan,pass456,1999-11-02,45 Jurong West Ave 3,92345678,2,ACTIVE
+103,Jamie Goh,jamiegoh,pass789,2001-08-20,88 Bedok North Road,93456789,1,ACTIVE

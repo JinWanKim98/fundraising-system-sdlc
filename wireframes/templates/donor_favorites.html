@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Favorites</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .content { padding: 30px; }
+        table { width: 100%; border: 1px solid black; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 20px; text-align: left; vertical-align: top; }
+        th { background: #d9d9d9; padding: 10px; border: 1px solid black; }
+        .progress-container { width: 250px; background: #d9d9d9; height: 15px; border: 1px solid black; margin-top: 10px; }
+        .btn-black { background: black; color: white; padding: 8px 15px; text-decoration: none; display: inline-block; margin-top: 15px; }
+        .flash-success { background: #e6f4ea; border: 1px solid #2e7d32; padding: 15px; color: #2e7d32; margin-top: 20px; display: none; align-items: center; gap: 10px; font-weight: bold; }
+        .check-icon { background: #2e7d32; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('auth.donor_browse') }}">Browse Activities</a>
+        <a href="{{ url_for('auth.donor_favorites') }}" class="active">Favorites</a>
+        <a href="{{ url_for('auth.donor_history') }}">History</a>
+    </nav>
+    <div class="content">
+        <h3>My Favorites List</h3>
+        <div style="margin-bottom: 20px;">
+            Search Favorites: <input type="text"> 
+            <button style="background: black; color: white;">SEARCH</button>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Activity Name</th>
+                    <th>Current Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>1. Help the Local Hospital</strong><br>
+                        <a href="{{ url_for('auth.donor_details') }}?type=hospital&from=favorites" class="btn-black">View Details</a>
+                    </td>
+                    <td>
+                        <strong>45%</strong> ($4,500 / $10,000)
+                        <div class="progress-container">
+                            <div style="background: black; width: 45%; height: 100%;"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>2. Clean Ocean Project</strong><br>
+                        <a href="{{ url_for('auth.donor_details') }}?type=ocean&from=favorites" class="btn-black">View Details</a>
+                    </td>
+                    <td>
+                        <strong>10%</strong> ($1,000 / $10,000)
+                        <div class="progress-container">
+                            <div style="background: black; width: 10%; height: 100%;"></div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="statusMessage" class="flash-success">
+            <div class="check-icon">✓</div>
+            <span id="statusText">Success: "Removed from favorites successfully"</span>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('status');
+        const messageBox = document.getElementById('statusMessage');
+        const messageText = document.getElementById('statusText');
+
+        if (status === 'unfavorited') {
+            messageBox.style.display = 'flex';
+            setTimeout(() => { messageBox.style.display = 'none'; }, 3000); // 3-second timeout
+        } else if (status === 'donated') {
+            messageText.innerText = 'Success: "Your donation has been processed successfully"';
+            messageBox.style.display = 'flex';
+            setTimeout(() => { messageBox.style.display = 'none'; }, 3000); // 3-second timeout
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ mode }} Activity</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .content { padding: 30px; max-width: 800px; }
+        .form-group { display: flex; margin-bottom: 20px; align-items: flex-start; }
+        .form-group label { width: 200px; font-weight: bold; }
+        .form-group input, .form-group textarea, .form-group select { flex: 1; padding: 10px; border: 1px solid black; }
+        .btn-black { background: black; color: white; padding: 10px 30px; cursor: pointer; border: none; font-weight: bold; }
+        .btn-cancel { background: white; color: black; padding: 10px 30px; border: 1px solid black; text-decoration: none; margin-left: 10px; }
+        .error { color: red; margin-top: 15px; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <div class="content">
+        <h3>{{ mode }} Fundraising Activity</h3>
+        <hr>
+        <form id="fundraiserForm">
+            <div class="form-group">
+                <label>Activity Title:</label>
+                <input type="text" id="title" value="{{ 'Save the Forests' if mode == 'Update' and request.args.get('id') == '001' else ('Clean Water Project' if mode == 'Update' and request.args.get('id') == '002' else '') }}">
+            </div>
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea id="desc" rows="5">{{ 'A community-driven initiative to protect endangered forest areas...' if mode == 'Update' and request.args.get('id') == '001' else ('Providing sustainable water filtration systems to rural communities...' if mode == 'Update' and request.args.get('id') == '002' else '') }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Target Amount ($):</label>
+                <input type="text" id="amount" value="{{ '10,000' if mode == 'Update' and request.args.get('id') == '001' else ('20,000' if mode == 'Update' and request.args.get('id') == '002' else '') }}">
+            </div>
+            <div class="form-group">
+                <label>Category:</label>
+                <select id="category">
+                    <option value="">Select Category</option>
+                    <option {{ 'selected' if mode == 'Update' and request.args.get('id') == '001' }}>Environment</option>
+                    <option {{ 'selected' if mode == 'Update' and request.args.get('id') == '002' }}>Infrastructure</option>
+                    <option>Health</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>End Date:</label>
+                <input type="date" id="endDate" value="{{ '2026-12-31' if mode == 'Update' and request.args.get('id') == '001' else ('2026-08-15' if mode == 'Update' and request.args.get('id') == '002' else '') }}">
+            </div>
+            <div style="margin-left: 200px;">
+                <button type="button" class="btn-black" onclick="validateForm()">{{ mode.upper() }} ACTIVITY</button>
+                <a href="{{ url_for('auth.fundraiser_activities') }}" class="btn-cancel">CANCEL</a>
+                <div id="errorMessage" class="error">*Error: "Missing details"</div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function validateForm() {
+            const fields = [
+                document.getElementById('title').value.trim(),
+                document.getElementById('desc').value.trim(),
+                document.getElementById('amount').value.trim(),
+                document.getElementById('category').value,
+                document.getElementById('endDate').value
+            ];
+
+            const errorDiv = document.getElementById('errorMessage');
+            const hasEmpty = fields.some(value => value === "");
+
+            if (hasEmpty) {
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+                // Redirect back to activities with the success flag and the current mode
+                const baseUrl = "{{ url_for('auth.fundraiser_activities') }}";
+                window.location.href = baseUrl + "?success=true&mode={{ mode }}";
+            }
+        }
+    </script>
+</body>
+</html>

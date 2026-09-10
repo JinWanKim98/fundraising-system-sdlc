@@ -1,0 +1,101 @@
+activity_id,account_id,activity_name,category_id,activity_desc,funding_current,funding_goal,start_date,end_date,activity_status
+201,106,Hope Clinic Campaign 01,1,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-01-05,2026-04-05,ongoing
+202,107,Bright Shelter Campaign 02,2,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-01-07,2026-04-27,ongoing
+203,108,Care School Fund Campaign 03,3,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-01-09,2026-05-19,ongoing
+204,109,Unity Sports Drive Campaign 04,4,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-01-11,2026-06-10,ongoing
+205,110,Future Food Bank Campaign 05,5,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-01-13,2026-04-13,ongoing
+206,111,Kindness Family Aid Campaign 06,6,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-01-15,2026-05-05,ongoing
+207,112,Relief Therapy Access Campaign 07,7,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2025-09-19,2025-11-18,completed
+208,113,Support Scholarship Campaign 08,8,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2025-09-21,2025-12-05,completed
+209,114,Stronger Youth Centre Campaign 09,9,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2025-08-14,2025-09-28,expired
+210,115,Renew Recovery Kit Campaign 10,10,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2025-10-15,2025-11-14,cancelled
+211,116,Hope Clinic Campaign 11,11,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-01-25,2026-06-04,ongoing
+212,117,Bright Shelter Campaign 12,12,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-01-27,2026-06-26,ongoing
+213,118,Care School Fund Campaign 13,13,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-01-29,2026-04-29,ongoing
+214,119,Unity Sports Drive Campaign 14,14,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-01-31,2026-05-21,ongoing
+215,120,Future Food Bank Campaign 15,15,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-02-02,2026-06-12,ongoing
+216,121,Kindness Family Aid Campaign 16,16,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-02-04,2026-07-04,ongoing
+217,122,Relief Therapy Access Campaign 17,17,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2025-10-09,2025-12-23,completed
+218,123,Support Scholarship Campaign 18,18,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2025-10-11,2026-01-09,completed
+219,124,Stronger Youth Centre Campaign 19,19,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2025-09-03,2025-10-18,expired
+220,125,Renew Recovery Kit Campaign 20,20,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2025-11-04,2025-12-04,cancelled
+221,126,Hope Clinic Campaign 21,21,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-02-14,2026-05-15,ongoing
+222,127,Bright Shelter Campaign 22,22,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-02-16,2026-06-06,ongoing
+223,128,Care School Fund Campaign 23,23,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-02-18,2026-06-28,ongoing
+224,129,Unity Sports Drive Campaign 24,24,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-02-20,2026-07-20,ongoing
+225,130,Future Food Bank Campaign 25,25,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-02-22,2026-05-23,ongoing
+226,131,Kindness Family Aid Campaign 26,26,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-02-24,2026-06-14,ongoing
+227,132,Relief Therapy Access Campaign 27,27,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2025-10-29,2026-01-27,completed
+228,133,Support Scholarship Campaign 28,28,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2025-10-31,2025-12-30,completed
+229,134,Stronger Youth Centre Campaign 29,29,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2025-09-23,2025-11-07,expired
+230,135,Renew Recovery Kit Campaign 30,30,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2025-11-24,2025-12-24,cancelled
+231,136,Hope Clinic Campaign 31,31,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-03-06,2026-07-14,ongoing
+232,137,Bright Shelter Campaign 32,32,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-03-08,2026-08-05,ongoing
+233,138,Care School Fund Campaign 33,33,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-03-10,2026-06-08,ongoing
+234,139,Unity Sports Drive Campaign 34,34,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-03-12,2026-06-30,ongoing
+235,140,Future Food Bank Campaign 35,35,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-03-14,2026-07-22,ongoing
+236,141,Kindness Family Aid Campaign 36,36,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-03-16,2026-08-13,ongoing
+237,142,Relief Therapy Access Campaign 37,37,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2025-11-18,2026-01-17,completed
+238,143,Support Scholarship Campaign 38,38,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2025-11-20,2026-02-03,completed
+239,144,Stronger Youth Centre Campaign 39,39,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2025-10-13,2025-11-27,expired
+240,145,Renew Recovery Kit Campaign 40,40,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2025-12-14,2026-01-13,cancelled
+241,146,Hope Clinic Campaign 41,41,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-03-26,2026-06-24,ongoing
+242,147,Bright Shelter Campaign 42,42,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-03-28,2026-07-16,ongoing
+243,148,Care School Fund Campaign 43,43,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-03-30,2026-08-07,ongoing
+244,149,Unity Sports Drive Campaign 44,44,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-04-01,2026-08-29,ongoing
+245,150,Future Food Bank Campaign 45,45,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-04-03,2026-07-02,ongoing
+246,106,Kindness Family Aid Campaign 46,46,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-04-05,2026-07-24,ongoing
+247,107,Relief Therapy Access Campaign 47,47,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2025-12-08,2026-02-21,completed
+248,108,Support Scholarship Campaign 48,48,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2025-12-10,2026-03-10,completed
+249,109,Stronger Youth Centre Campaign 49,49,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2025-11-02,2025-12-17,expired
+250,110,Renew Recovery Kit Campaign 50,50,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2026-01-03,2026-02-02,cancelled
+251,111,Hope Clinic Campaign 51,51,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-04-15,2026-08-23,ongoing
+252,112,Bright Shelter Campaign 52,52,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-04-17,2026-09-14,ongoing
+253,113,Care School Fund Campaign 53,53,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-04-19,2026-07-18,ongoing
+254,114,Unity Sports Drive Campaign 54,54,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-04-21,2026-08-09,ongoing
+255,115,Future Food Bank Campaign 55,55,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-04-23,2026-08-31,ongoing
+256,116,Kindness Family Aid Campaign 56,56,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-04-25,2026-09-22,ongoing
+257,117,Relief Therapy Access Campaign 57,57,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2025-12-28,2026-03-28,completed
+258,118,Support Scholarship Campaign 58,58,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2025-12-30,2026-02-28,completed
+259,119,Stronger Youth Centre Campaign 59,59,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2025-11-22,2026-01-06,expired
+260,120,Renew Recovery Kit Campaign 60,60,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2026-01-23,2026-02-22,cancelled
+261,121,Hope Clinic Campaign 61,61,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-05-05,2026-08-03,ongoing
+262,122,Bright Shelter Campaign 62,62,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-05-07,2026-08-25,ongoing
+263,123,Care School Fund Campaign 63,63,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-05-09,2026-09-16,ongoing
+264,124,Unity Sports Drive Campaign 64,64,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-05-11,2026-10-08,ongoing
+265,125,Future Food Bank Campaign 65,65,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-05-13,2026-08-11,ongoing
+266,126,Kindness Family Aid Campaign 66,66,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-05-15,2026-09-02,ongoing
+267,127,Relief Therapy Access Campaign 67,67,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2026-01-17,2026-03-18,completed
+268,128,Support Scholarship Campaign 68,68,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2026-01-19,2026-04-04,completed
+269,129,Stronger Youth Centre Campaign 69,69,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2025-12-12,2026-01-26,expired
+270,130,Renew Recovery Kit Campaign 70,70,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2026-02-12,2026-03-14,cancelled
+271,131,Hope Clinic Campaign 71,71,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-05-25,2026-10-02,ongoing
+272,132,Bright Shelter Campaign 72,72,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-05-27,2026-10-24,ongoing
+273,133,Care School Fund Campaign 73,73,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-05-29,2026-08-27,ongoing
+274,134,Unity Sports Drive Campaign 74,74,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-05-31,2026-09-18,ongoing
+275,135,Future Food Bank Campaign 75,75,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-06-02,2026-10-10,ongoing
+276,136,Kindness Family Aid Campaign 76,76,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-06-04,2026-11-01,ongoing
+277,137,Relief Therapy Access Campaign 77,77,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2026-02-06,2026-04-22,completed
+278,138,Support Scholarship Campaign 78,78,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2026-02-08,2026-05-09,completed
+279,139,Stronger Youth Centre Campaign 79,79,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2026-01-01,2026-02-15,expired
+280,140,Renew Recovery Kit Campaign 80,80,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2026-03-04,2026-04-03,cancelled
+281,141,Hope Clinic Campaign 81,81,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-06-14,2026-09-12,ongoing
+282,142,Bright Shelter Campaign 82,82,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-06-16,2026-10-04,ongoing
+283,143,Care School Fund Campaign 83,83,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-06-18,2026-10-26,ongoing
+284,144,Unity Sports Drive Campaign 84,84,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-06-20,2026-11-17,ongoing
+285,145,Future Food Bank Campaign 85,85,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-06-22,2026-09-20,ongoing
+286,146,Kindness Family Aid Campaign 86,86,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-06-24,2026-10-12,ongoing
+287,147,Relief Therapy Access Campaign 87,87,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2026-02-26,2026-05-27,completed
+288,148,Support Scholarship Campaign 88,88,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2026-02-28,2026-04-29,completed
+289,149,Stronger Youth Centre Campaign 89,89,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2026-01-21,2026-03-07,expired
+290,150,Renew Recovery Kit Campaign 90,90,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2026-03-24,2026-04-23,cancelled
+291,106,Hope Clinic Campaign 91,91,Raising funds for clinic needs through the hope outreach initiative.,400.00,5000.00,2026-07-04,2026-11-11,ongoing
+292,107,Bright Shelter Campaign 92,92,Raising funds for shelter needs through the bright outreach initiative.,1425.00,7500.00,2026-07-06,2026-12-03,ongoing
+293,108,Care School Fund Campaign 93,93,Raising funds for school fund needs through the care outreach initiative.,3000.00,10000.00,2026-07-08,2026-10-06,ongoing
+294,109,Unity Sports Drive Campaign 94,94,Raising funds for sports drive needs through the unity outreach initiative.,5125.00,12500.00,2026-07-10,2026-10-28,ongoing
+295,110,Future Food Bank Campaign 95,95,Raising funds for food bank needs through the future outreach initiative.,7800.00,15000.00,2026-07-12,2026-11-19,ongoing
+296,111,Kindness Family Aid Campaign 96,96,Raising funds for family aid needs through the kindness outreach initiative.,1400.00,17500.00,2026-07-14,2026-12-11,ongoing
+297,112,Relief Therapy Access Campaign 97,97,Raising funds for therapy access needs through the relief outreach initiative.,20000.00,20000.00,2026-03-18,2026-05-17,completed
+298,113,Support Scholarship Campaign 98,98,Raising funds for scholarship needs through the support outreach initiative.,22500.00,22500.00,2026-03-20,2026-06-03,completed
+299,114,Stronger Youth Centre Campaign 99,99,Raising funds for youth centre needs through the stronger outreach initiative.,11250.00,25000.00,2026-02-10,2026-03-27,expired
+300,115,Renew Recovery Kit Campaign 100,100,Raising funds for recovery kit needs through the renew outreach initiative.,4950.00,27500.00,2026-04-13,2026-05-13,cancelled

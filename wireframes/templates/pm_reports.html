@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Platform Reports</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; font-size: 16px; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .content { display: flex; padding: 30px; gap: 40px; min-height: 80vh; }
+        .sidebar { width: 220px; flex-shrink: 0; }
+        .sidebar-box { border: 1.5px solid black; border-radius: 4px; overflow: hidden; }
+        .sidebar-header { background: black; color: white; padding: 12px; font-weight: bold; }
+        .sidebar-item { padding: 12px; border-top: 1px solid black; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .sidebar-item:hover { background: #f5f5f5; }
+        .sidebar-item.active::before { content: "✔"; font-weight: bold; margin-right: 5px; }
+        .main-area { flex: 1; }
+        .report-section { display: none; }
+        .report-section.active { display: block; }
+        h3 { font-size: 22px; margin-top: 0; border-bottom: 1px solid black; padding-bottom: 10px; }
+        .filter-row { margin-bottom: 20px; font-weight: bold; font-size: 15px; }
+        input, select { padding: 6px; border: 1px solid black; margin: 0 10px; }
+        .btn-black { background: black; color: white; padding: 10px 20px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        .report-result { border-top: 1px solid black; margin-top: 20px; padding-top: 10px; }
+        .report-result h4 { font-size: 20px; font-weight: bold; margin: 15px 0; border-bottom: 1px solid black; padding-bottom: 10px; }
+        .metrics-list { list-style: none; padding: 0; }
+        .metrics-list li { padding: 8px 0; font-size: 14px; }
+        .metrics-list span { font-weight: bold; margin-left: 5px; }
+        .success-msg { background: #e6f4ea; color: #2e7d32; padding: 12px; border-radius: 4px; display: flex; align-items: center; gap: 10px; margin-top: 20px; font-weight: bold; border: 1px solid #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('auth.pm_categories') }}">Categories</a>
+        <a href="{{ url_for('auth.pm_reports') }}" class="active">Reports</a>
+    </nav>
+
+    <div class="content">
+        <div class="sidebar">
+            <div class="sidebar-box">
+                <div class="sidebar-header">Report Type</div>
+                <div class="sidebar-item active" id="tab-daily" onclick="switchTab('daily')">Daily</div>
+                <div class="sidebar-item" id="tab-weekly" onclick="switchTab('weekly')">Weekly</div>
+                <div class="sidebar-item" id="tab-monthly" onclick="switchTab('monthly')">Monthly</div>
+            </div>
+        </div>
+
+        <div class="main-area">
+            <div id="section-daily" class="report-section active">
+                <h3>Daily Report</h3>
+                <div class="filter-row">1. Select Date: <input type="date" id="daily-date"></div>
+                <div class="filter-row">2. <button class="btn-black" onclick="generateReport('daily')">Generate Report</button></div>
+                <div id="result-daily" style="display:none;" class="report-result">
+                    <h4 id="daily-title"></h4>
+                    <p><strong>Metrics Summary</strong></p>
+                    <ul class="metrics-list">
+                        <li>1. Total Donations Collected: <span>$1,200.00</span></li>
+                        <li>2. Total New User Accounts Created: <span>6</span></li>
+                        <li>3. Total Active Fundraising Activities: <span>45</span></li>
+                        <li>4. Total Completed Activities: <span>1</span></li>
+                        <li>5. Most Active Category: <span>Medical</span></li>
+                    </ul>
+                    <div class="success-msg">✔ Success: "Daily report generated successfully"</div>
+                </div>
+            </div>
+
+            <div id="section-weekly" class="report-section">
+                <h3>Weekly Report</h3>
+                <div class="filter-row">1. Select Range: From <input type="date" id="weekly-from" onchange="autoFillWeeklyTo()"> To <input type="date" id="weekly-to"></div>
+                <div class="filter-row">2. <button class="btn-black" onclick="generateReport('weekly')">Generate Report</button></div>
+                <div id="result-weekly" style="display:none;" class="report-result">
+                    <h4 id="weekly-title"></h4>
+                    <p><strong>Metrics Summary</strong></p>
+                    <ul class="metrics-list">
+                        <li>1. Total Donations Collected: <span>$8,950.00</span></li>
+                        <li>2. Total New User Accounts Created: <span>38</span></li>
+                        <li>3. Total Active Fundraising Activities: <span>45</span></li>
+                        <li>4. Total Completed Activities: <span>12</span></li>
+                        <li>5. Most Active Category: <span>Medical</span></li>
+                    </ul>
+                    <div class="success-msg">✔ Success: "Weekly report generated successfully"</div>
+                </div>
+            </div>
+
+            <div id="section-monthly" class="report-section">
+                <h3>Monthly Report</h3>
+                <div class="filter-row">1. Select Month: 
+                    <select id="monthly-month">
+                        <option value="">--Select Month--</option>
+                        <option>January</option><option>February</option><option>March</option><option>April</option>
+                        <option>May</option><option>June</option><option>July</option><option>August</option>
+                        <option>September</option><option>October</option><option>November</option><option>December</option>
+                    </select> 
+                    Year: <input type="number" id="monthly-year" placeholder="YYYY" style="width: 80px;">
+                </div>
+                <div class="filter-row">2. <button class="btn-black" onclick="generateReport('monthly')">Generate Report</button></div>
+                <div id="result-monthly" style="display:none;" class="report-result">
+                    <h4 id="monthly-title"></h4>
+                    <p><strong>Metrics Summary</strong></p>
+                    <ul class="metrics-list">
+                        <li>1. Total Donations Collected: <span>$32,400.00</span></li>
+                        <li>2. Total New User Accounts Created: <span>112</span></li>
+                        <li>3. Total Active Fundraising Activities: <span>45</span></li>
+                        <li>4. Total Completed Activities: <span>28</span></li>
+                        <li>5. Most Active Category: <span>Medical</span></li>
+                    </ul>
+                    <div class="success-msg">✔ Success: "Monthly report generated successfully"</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.report-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-' + tab).classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        function autoFillWeeklyTo() {
+            const fromInput = document.getElementById('weekly-from');
+            const toInput = document.getElementById('weekly-to');
+            
+            if (fromInput.value) {
+                const [year, month, day] = fromInput.value.split('-');
+                const fromDate = new Date(year, month - 1, day);
+                const toDate = new Date(fromDate);
+                toDate.setDate(fromDate.getDate() + 7);
+                
+                const yyyy = toDate.getFullYear();
+                const mm = String(toDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(toDate.getDate()).padStart(2, '0');
+                
+                toInput.value = `${yyyy}-${mm}-${dd}`;
+            }
+        }
+
+        function formatDateString(dateStr) {
+            if (!dateStr) return "[Date]";
+            const [year, month, day] = dateStr.split('-');
+            const date = new Date(year, month - 1, day);
+            const options = { month: 'long', day: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function formatWeeklyRange(fromStr, toStr) {
+            if (!fromStr || !toStr) return "[Date Range]";
+            const [fYear, fMonth, fDay] = fromStr.split('-');
+            const [tYear, tMonth, tDay] = toStr.split('-');
+            
+            const fromDate = new Date(fYear, fMonth - 1, fDay);
+            const toDate = new Date(tYear, tMonth - 1, tDay);
+            
+            const monthDay = { month: 'long', day: 'numeric' };
+            const yearOnly = { year: 'numeric' };
+            
+            return `${fromDate.toLocaleDateString('en-US', monthDay)} – ${toDate.toLocaleDateString('en-US', monthDay)}, ${toDate.toLocaleDateString('en-US', yearOnly)}`;
+        }
+
+        function generateReport(type) {
+            const resultDiv = document.getElementById('result-' + type);
+            resultDiv.style.display = 'block';
+            let title = "";
+            
+            if(type === 'daily') {
+                let dateVal = document.getElementById('daily-date').value;
+                let formattedDate = formatDateString(dateVal);
+                title = "Report: Daily Performance (" + formattedDate + ")";
+            } else if(type === 'weekly') {
+                let from = document.getElementById('weekly-from').value;
+                let to = document.getElementById('weekly-to').value;
+                let formattedRange = formatWeeklyRange(from, to);
+                title = "Report: Weekly Performance (" + formattedRange + ")";
+            } else if(type === 'monthly') {
+                let month = document.getElementById('monthly-month').value || "[Month]";
+                let year = document.getElementById('monthly-year').value || "[Year]";
+                title = "Report: Monthly Performance (" + month + " " + year + ")";
+            }
+            
+            document.getElementById(type + '-title').innerText = title;
+
+            const successMsg = resultDiv.querySelector('.success-msg');
+            if (successMsg) {
+                successMsg.style.display = 'flex';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Fundraising Category</title>
+</head>
+<body>
+    <h1>Delete Fundraising Category</h1>
+    {% with messages = get_flashed_messages(with_categories = true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p><strong>{{ category }}:</strong> {{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="post" onsubmit="return confirm('Are you sure you want to delete this category?');">
+        <div>
+            <label for="categoryId">Category ID</label>
+            <input
+                type="text"
+                id="categoryId"
+                name="categoryId"
+            >
+        </div>
+
+        <button type="submit">Delete</button>
+        </button>
+    </form>
+
+    <p>
+        <a href="{{ url_for('fundraising_category.main_page') }}">Back to Categories</a>
+    </p>
+</body>
+</html>

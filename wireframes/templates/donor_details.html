@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Activity Details</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .content { padding: 30px; }
+        .btn-back { background: #d9d9d9; color: black; border: 1px solid black; padding: 5px 15px; text-decoration: none; font-weight: bold; }
+        .progress-container { width: 400px; background: #d9d9d9; height: 25px; border: 1px solid black; margin: 10px 0; }
+        .progress-bar { background: black; height: 100%; transition: width 0.5s; }
+        .actions { margin-top: 30px; display: flex; gap: 10px; }
+        .btn-black { background: black; color: white; padding: 10px 40px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-gray { background: #d9d9d9; color: black; border: 1px solid black; padding: 10px 40px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('auth.donor_browse') }}">Browse Activities</a>
+        <a href="{{ url_for('auth.donor_favorites') }}">Favorites</a>
+        <a href="{{ url_for('auth.donor_history') }}">History</a>
+    </nav>
+    <div class="content">
+        <a id="back-link" href="{{ url_for('auth.donor_browse') }}" class="btn-back"><< Back to Browse Activities</a>
+        
+        <h3 id="display-title">Activity Details</h3>
+        <p><strong>Category:</strong> <span id="display-category"></span></p>
+        <p><strong>Status:</strong> Active</p>
+        <p><strong>End Date:</strong> <span id="display-date"></span></p>
+        
+        <div style="display: flex; justify-content: space-between; width: 400px;">
+            <strong>Amount Collected</strong> <strong id="display-stats"></strong>
+        </div>
+        <div class="progress-container">
+            <div id="display-bar" class="progress-bar"></div>
+        </div>
+        
+        <hr>
+        <h4>Description:</h4>
+        <p id="display-description"></p>
+        <hr>
+        
+        <div class="actions">
+            <button class="btn-black" onclick="goToDonate()">DONATE NOW</button>
+            <button id="fav-btn" class="btn-gray" onclick="handleFavorite()">SAVE TO FAVORITES</button>
+        </div>
+    </div>
+
+    <script>
+        const projects = {
+            'hospital': { title: 'Help the Local Hospital', category: 'Health', stats: '$4,500 / $10,000', percent: '45%', date: '31/12/2026', desc: 'This activity aims to raise funds for new medical equipment...' },
+            'ocean': { title: 'Clean Ocean Project', category: 'Environment', stats: '$1,000 / $10,000', percent: '10%', date: '15/11/2026', desc: 'This initiative focuses on removing plastic waste...' },
+            'education': { title: 'Education for All', category: 'Education', stats: '$2,000 / $15,000', percent: '13%', date: '20/10/2026', desc: 'Providing essential school supplies...' }
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        const projectType = params.get('type') || 'hospital';
+        const source = params.get('from');
+        const data = projects[projectType];
+
+        document.getElementById('display-title').innerText = 'Activity Details: "' + data.title + '"';
+        document.getElementById('display-category').innerText = data.category;
+        document.getElementById('display-stats').innerText = data.stats;
+        document.getElementById('display-date').innerText = data.date;
+        document.getElementById('display-description').innerText = data.desc;
+        document.getElementById('display-bar').style.width = data.percent;
+
+        if (source === 'favorites') {
+            document.getElementById('back-link').innerText = "<< Back to Favorites";
+            document.getElementById('back-link').href = "{{ url_for('auth.donor_favorites') }}";
+            document.getElementById('fav-btn').innerText = "UNFAVORITE";
+        }
+
+        function handleFavorite() {
+            if (source === 'favorites') {
+                window.location.href = "{{ url_for('auth.donor_favorites') }}?status=unfavorited";
+            } else {
+                window.location.href = "{{ url_for('auth.donor_browse') }}?status=favorited";
+            }
+        }
+
+        function goToDonate() {
+            const donateUrl = "{{ url_for('auth.donor_donate') }}?type=" + projectType + (source ? "&from=" + source : "");
+            window.location.href = donateUrl;
+        }
+    </script>
+</body>
+</html>

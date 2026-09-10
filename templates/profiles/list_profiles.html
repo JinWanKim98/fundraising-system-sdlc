@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: white; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .main { padding: 30px; }
+        .main h2 { font-size: 24px; color: #5a5a5a; margin: 0 0 20px; }
+        .search-row { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+        .search-row form { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: bold; }
+        .search-row input { width: 240px; height: 28px; border: 1px solid #777; border-radius: 3px; padding: 0 8px; }
+        .search-btn { background: #000; color: white; border: none; border-radius: 4px; height: 32px; width: 90px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .table-actions { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 8px; }
+        .table-box { width: 100%; border: 1px solid #777; border-radius: 4px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        thead { background: #d9d9d9; }
+        th { text-align: left; padding: 12px; border-bottom: 1px solid #000; }
+        td { padding: 12px; border-bottom: 1px solid #ccc; font-weight: bold; vertical-align: top; }
+        .message { padding: 12px; margin-bottom: 16px; border: 1px solid #777; font-weight: bold; }
+        .message.success { background: #e6f4ea; color: #2e7d32; border-color: #2e7d32; }
+        .message.error { background: #fdecea; color: #c62828; border-color: #c62828; }
+        .action-btn { background: #000; color: white; border: none; border-radius: 4px; padding: 6px 12px; font-weight: bold; cursor: pointer; margin-right: 4px; text-decoration: none; display: inline-block; }
+        .add-btn { background: #2b2b2b; color: white; border: none; border-radius: 6px; padding: 10px 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
+        .empty-row { text-align: center; color: #666; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); justify-content: center; align-items: center; z-index: 1000; }
+        .confirm-box { background: #f4f4f4; width: 340px; border-radius: 6px; padding: 20px; text-align: center; border: 1px solid black; color: black; }
+        .confirm-box h3 { margin-top: 0; }
+        .modal-actions { display: flex; gap: 8px; margin-top: 24px; justify-content: center; }
+        .cancel-btn { background: #777; color: white; border: none; border-radius: 4px; height: 32px; width: 90px; cursor: pointer; font-weight: bold; }
+        .modal-box { width: 340px; background: #1f1f1f; color: white; border-radius: 5px; padding: 28px 26px 30px; border: 1px solid black; }
+        .modal-box h2 { text-align: center; margin-top: 0; }
+        .modal-box label { display: block; font-size: 12px; margin: 10px 0 6px; }
+        .modal-box input, .modal-box textarea { width: 100%; border-radius: 6px; padding: 8px; border: none; box-sizing: border-box; }
+        .white-btn { background: white; color: #333; border-radius: 5px; padding: 8px 14px; cursor: pointer; border: none; font-weight: bold; }
+        .details-box { background: white; width: 360px; border-radius: 4px; padding: 20px; color: #111; border: 1px solid black; }
+        .details-box h3 { margin-top: 0; }
+        .details-box p { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session.get('user_name', 'Guest') }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('user_account.list_accounts') }}">User Account</a>
+        <a href="{{ url_for('user_profile.list_profiles') }}" class="active">User Profile</a>
+    </nav>
+
+    <div class="main">
+        <h2>All User Profiles</h2>
+
+        {% with messages = get_flashed_messages(with_categories = true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="search-row">
+            <form method="get" action="{{ url_for('user_profile.list_profiles') }}">
+                <label for="search">Search Profile:</label>
+                <input
+                    type="text"
+                    id="search"
+                    name="search"
+                    placeholder="Name or description"
+                    value="{{ search_term }}"
+                >
+                <button class="search-btn" type="submit">SEARCH</button>
+                <a class="search-btn" href="{{ url_for('user_profile.list_profiles') }}">CLEAR</a>
+            </form>
+        </div>
+
+        <div class="table-actions">
+            <button class="add-btn" type="button" onclick="openCreateProfileModal()">+ Add New User Profile</button>
+        </div>
+
+        <div class="table-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Profile ID</th>
+                        <th>All Profiles</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if profiles %}
+                        {% for profile in profiles %}
+                            <tr>
+                                <td>{{ profile.profileId }}</td>
+                                <td>{{ profile.profileName }}</td>
+                                <td>{{ profile.profileDescription }}</td>
+                                <td>
+                                    <button
+                                        class="action-btn"
+                                        type="button"
+                                        onclick='openUpdateProfileModal(
+                                            {{ profile.profileId|tojson }},
+                                            {{ profile.profileName|tojson }},
+                                            {{ profile.profileDescription|tojson }}
+                                        )'
+                                    >Update</button>
+                                    <button
+                                        class="action-btn"
+                                        type="button"
+                                        onclick='openViewProfileModal(
+                                            {{ profile.profileId|tojson }},
+                                            {{ profile.profileName|tojson }},
+                                            {{ profile.profileDescription|tojson }}
+                                        )'
+                                    >View</button>
+                                    <button
+                                        class="action-btn"
+                                        type="button"
+                                        onclick='openDeleteProfileModal({{ profile.profileId|tojson }}, {{ profile.profileName|tojson }})'
+                                    >Delete</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% elif profiles == 0 %}
+                        <tr>
+                            <td class="empty-row" colspan="4">Search user profiles by name or description.</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td class="empty-row" colspan="4">No user profiles found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="createProfileModal">
+        <div class="modal-box">
+            <h2>Create New Profile</h2>
+            <form method="post" action="{{ url_for('user_profile.create_profile') }}">
+                <label for="createProfileName">User Profile</label>
+                <input type="text" id="createProfileName" name="profileName" required>
+
+                <label for="createProfileDescription">Profile Description</label>
+                <textarea id="createProfileDescription" name="profileDescription" rows="3" required></textarea>
+
+                <div class="modal-actions">
+                    <button class="white-btn" type="submit">Create Profile</button>
+                    <button class="cancel-btn" type="button" onclick="closeCreateProfileModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="updateProfileModal">
+        <div class="modal-box">
+            <h2>Update Profile Details</h2>
+            <form method="post" action="{{ url_for('user_profile.update_profile') }}">
+                <label for="updateProfileId">Profile ID</label>
+                <input type="text" id="updateProfileId" name="profileId" readonly required>
+
+                <label for="updateProfileName">User Profile</label>
+                <input type="text" id="updateProfileName" name="profileName" required>
+
+                <label for="updateProfileDescription">Profile Description</label>
+                <textarea id="updateProfileDescription" name="profileDescription" rows="3" required></textarea>
+
+                <div class="modal-actions">
+                    <button class="white-btn" type="submit">Update Profile</button>
+                    <button class="cancel-btn" type="button" onclick="closeUpdateProfileModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="viewProfileModal">
+        <div class="details-box">
+            <h3>Profile Details</h3>
+            <p>Profile ID: <span id="viewProfileId"></span></p>
+            <p>User Profile: <span id="viewProfileName"></span></p>
+            <p>Profile Description: <span id="viewProfileDescription"></span></p>
+            <div class="modal-actions">
+                <button class="search-btn" type="button" onclick="closeViewProfileModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteProfileModal">
+        <div class="confirm-box">
+            <h3>Are you sure?</h3>
+            <p>
+                This will permanently delete
+                <strong id="deleteProfileName"></strong>
+                (Profile ID: <span id="deleteProfileIdText"></span>).
+            </p>
+            <form method="post" action="{{ url_for('user_profile.delete_profile') }}">
+                <input type="hidden" id="deleteProfileId" name="profileId">
+                <div class="modal-actions">
+                    <button class="search-btn" type="submit">Yes</button>
+                    <button class="cancel-btn" type="button" onclick="closeDeleteProfileModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openCreateProfileModal() {
+            document.getElementById("createProfileModal").style.display = "flex";
+        }
+
+        function closeCreateProfileModal() {
+            document.getElementById("createProfileModal").style.display = "none";
+        }
+
+        function openUpdateProfileModal(profileId, profileName, profileDescription) {
+            document.getElementById("updateProfileId").value = profileId;
+            document.getElementById("updateProfileName").value = profileName || "";
+            document.getElementById("updateProfileDescription").value = profileDescription || "";
+            document.getElementById("updateProfileModal").style.display = "flex";
+        }
+
+        function closeUpdateProfileModal() {
+            document.getElementById("updateProfileModal").style.display = "none";
+        }
+
+        function openViewProfileModal(profileId, profileName, profileDescription) {
+            document.getElementById("viewProfileId").innerText = profileId ?? "";
+            document.getElementById("viewProfileName").innerText = profileName ?? "";
+            document.getElementById("viewProfileDescription").innerText = profileDescription ?? "";
+            document.getElementById("viewProfileModal").style.display = "flex";
+        }
+
+        function closeViewProfileModal() {
+            document.getElementById("viewProfileModal").style.display = "none";
+        }
+
+        function openDeleteProfileModal(profileId, profileName) {
+            document.getElementById("deleteProfileId").value = profileId;
+            document.getElementById("deleteProfileIdText").innerText = profileId;
+            document.getElementById("deleteProfileName").innerText = profileName;
+            document.getElementById("deleteProfileModal").style.display = "flex";
+        }
+
+        function closeDeleteProfileModal() {
+            document.getElementById("deleteProfileModal").style.display = "none";
+        }
+    </script>
+</body>
+</html>

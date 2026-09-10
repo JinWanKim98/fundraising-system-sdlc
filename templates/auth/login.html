@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fundraising App Login</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f7f7f7;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-card {
+            width: 390px;
+            max-width: calc(100vw - 32px);
+            background: #000;
+            border-radius: 4px;
+            padding: 28px 30px 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+        }
+
+        .profile-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 12px;
+            border: 8px solid white;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .profile-icon::before {
+            content: "";
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 50%;
+        }
+
+        .profile-icon::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: 9px;
+            width: 54px;
+            height: 29px;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 54px 54px 0 0;
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            text-align: center;
+            font-size: 1.65rem;
+            font-weight: 400;
+            line-height: 1.15;
+        }
+
+        .form-row {
+            margin-top: 13px;
+        }
+
+        label {
+            display: block;
+            margin: 0 0 5px 24px;
+            font-size: 0.88rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 38px;
+            border: 0;
+            border-radius: 20px;
+            background: #f0eaf4;
+            padding: 0 16px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        select {
+            appearance: auto;
+            color: #111;
+        }
+
+        .submit-row {
+            margin-top: 22px;
+            text-align: center;
+        }
+
+        .submit-btn {
+            min-width: 76px;
+            height: 32px;
+            border: 0;
+            border-radius: 7px;
+            background: #e8e8e8;
+            color: #777;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #fff;
+            color: #111;
+        }
+
+        .message {
+            margin: 12px 0 0;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .message.success {
+            background: #e6f4ea;
+            color: #2e7d32;
+        }
+
+        .message.error {
+            background: #fdecea;
+            color: #c62828;
+        }
+
+        @media (max-width: 430px) {
+            .login-card {
+                padding: 24px 22px 28px;
+            }
+
+            label {
+                margin-left: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="login-card">
+        <div class="profile-icon" aria-hidden="true"></div>
+        <h1>Fundraising App<br>Log In</h1>
+
+        {% with messages = get_flashed_messages(with_categories = true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('auth.login') }}">
+            <div class="form-row">
+                <label for="userName">Username</label>
+                <input type="text" id="userName" name="userName" autocomplete="username" required>
+            </div>
+
+            <div class="form-row">
+                <label for="passWord">Password</label>
+                <input type="password" id="passWord" name="passWord" autocomplete="current-password" required>
+            </div>
+
+            <div class="form-row">
+                <label for="profileId">Profile</label>
+                <select id="profileId" name="profileId" required>
+                    <option value="">Select profile</option>
+                    {% for profile in profiles %}
+                        <option value="{{ profile.profileId }}">{{ profile.profileName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="submit-row">
+                <button class="submit-btn" type="submit">Submit</button>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

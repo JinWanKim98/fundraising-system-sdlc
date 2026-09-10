@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View User Accounts</title>
+</head>
+<body>
+    <h1>View User Accounts</h1>
+
+    {% with messages = get_flashed_messages(with_categories = true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p><strong>{{ category }}:</strong> {{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if accounts %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Account ID</th>
+                    <th>Full Name</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>DOB</th>
+                    <th>Address</th>
+                    <th>Contact Number</th>
+                    <th>Profile ID</th>
+                    <th>Account Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in accounts %}
+                    <tr>
+                        <td>{{ account.accountId }}</td>
+                        <td>{{ account.fullName }}</td>
+                        <td>{{ account.userName }}</td>
+                        <td>{{ account.passWord }}</td>
+                        <td>{{ account.birthday }}</td>
+                        <td>{{ account.address }}</td>
+                        <td>{{ account.contact_number }}</td>
+                        <td>{{ account.profileId }}</td>
+                        <td>{{ account.accountStatus }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No user accounts found.</p>
+    {% endif %}
+
+    <p>
+        <a href="{{ url_for('user_account.create_accounts') }}">Create User Account</a>
+    </p>
+    <p>
+        <a href="{{ url_for('user_account.update_accounts') }}">Update User Account</a>
+    </p>
+    <p>
+        <a href="{{ url_for('user_account.suspend_account') }}">Suspend User Account</a>
+    </p>
+    <p>
+        <a href="{{ url_for('user_account.list_accounts') }}">Back to Accounts</a>
+    </p>
+</body>
+</html>

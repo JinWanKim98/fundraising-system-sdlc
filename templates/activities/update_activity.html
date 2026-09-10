@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Activity</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .content { padding: 30px; max-width: 800px; }
+        .form-group { display: flex; margin-bottom: 20px; align-items: flex-start; }
+        .form-group label { width: 200px; font-weight: bold; }
+        .form-group input, .form-group textarea, .form-group select { flex: 1; padding: 10px; border: 1px solid black; }
+        .btn-black { background: black; color: white; padding: 10px 30px; cursor: pointer; border: none; font-weight: bold; }
+        .btn-cancel { background: white; color: black; padding: 10px 30px; border: 1px solid black; text-decoration: none; margin-left: 10px; }
+        .message { padding: 12px; margin-bottom: 16px; border: 1px solid #777; font-weight: bold; }
+        .message.success { background: #e6f4ea; color: #2e7d32; border-color: #2e7d32; }
+        .message.error { background: #fdecea; color: #c62828; border-color: #c62828; }
+        input[readonly] { background: #eee; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session.get('user_name', 'Guest') }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('fundraising_activity.list_activities') }}" class="active">My Activities</a>
+        <a href="{{ url_for('fundraising_activity.view_completed_activities') }}">Completed</a>
+    </nav>
+    <div class="content">
+        <h3>Update Fundraising Activity</h3>
+        <hr>
+
+        {% with messages = get_flashed_messages(with_categories = true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" onsubmit="return confirm('Confirm update?');">
+            <div class="form-group">
+                <label for="activityId">Activity ID:</label>
+                <input
+                    type="number"
+                    id="activityId"
+                    name="activityId"
+                    value="{{ activity.activityId if activity else '' }}"
+                    {% if activity %}readonly{% endif %}
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="name">Activity Title:</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ activity.activityName if activity else '' }}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="desc">Description:</label>
+                <textarea id="desc" name="desc" rows="5" required>{{ activity.activityDescription if activity else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="goal">Target Amount ($):</label>
+                <input
+                    type="number"
+                    step="0.01"
+                    id="goal"
+                    name="goal"
+                    value="{{ activity.fundingGoal if activity else '' }}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                    {% set current_status = activity.activityStatus|lower if activity else '' %}
+                    <option value="">Select Status</option>
+                    <option value="ongoing" {% if current_status == 'ongoing' %}selected{% endif %}>Ongoing</option>
+                    <option value="completed" {% if current_status == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="expired" {% if current_status == 'expired' %}selected{% endif %}>Expired</option>
+                    <option value="cancelled" {% if current_status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+
+            <div style="margin-left: 200px;">
+                <button type="submit" class="btn-black">Update Activity</button>
+                <a href="{{ url_for('fundraising_activity.list_activities') }}" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

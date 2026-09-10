@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Make a Donation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        .content { padding: 30px; }
+        .btn-back { background: #d9d9d9; color: black; border: 1px solid black; padding: 5px 15px; text-decoration: none; font-weight: bold; }
+        .donation-box { border: 1px solid black; padding: 30px; width: 400px; margin-top: 20px; }
+        .btn-black { background: black; color: white; padding: 10px 40px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
+        input[type="number"] { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; border: 1px solid #ccc; }
+        
+        /* New style for the error message */
+        .error-msg { color: red; font-size: 14px; display: none; margin-top: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('auth.donor_browse') }}">Browse Activities</a>
+        <a href="{{ url_for('auth.donor_favorites') }}">Favorites</a>
+        <a href="{{ url_for('auth.donor_history') }}">History</a>
+    </nav>
+    <div class="content">
+        <a id="back-link" href="{{ url_for('auth.donor_browse') }}" class="btn-back"><< Back to Browse Activities</a>
+        
+        <h3 id="project-title">Make a Donation</h3>
+        
+        <div class="donation-box">
+            <label><strong>Enter Donation Amount ($):</strong></label>
+            <input type="number" id="amount" placeholder="0.00" min="0.01" step="0.01">
+            <!-- Error message container -->
+            <span id="error-message" class="error-msg">Please enter a valid amount</span>
+            <button class="btn-black" onclick="submitDonation()">CONFIRM DONATION</button>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const source = params.get('from');
+        const amountInput = document.getElementById('amount');
+        const errorDisplay = document.getElementById('error-message');
+
+        if (source === 'favorites') {
+            document.getElementById('back-link').innerText = "<< Back to Favorites";
+            document.getElementById('back-link').href = "{{ url_for('auth.donor_favorites') }}";
+        }
+
+        // Auto-format to 0.00 on blur
+        amountInput.addEventListener('blur', function() {
+            const value = parseFloat(this.value);
+            if (!isNaN(value)) {
+                this.value = value.toFixed(2);
+            }
+        });
+
+        function submitDonation() {
+            const amount = amountInput.value;
+            
+            if(!amount || amount <= 0) { 
+                errorDisplay.style.display = "block";
+                return; 
+            }
+            
+            // Hide error if valid
+            errorDisplay.style.display = "none";
+            
+            const targetUrl = source === 'favorites' ? "{{ url_for('auth.donor_favorites') }}" : "{{ url_for('auth.donor_browse') }}";
+            window.location.href = targetUrl + "?status=donated";
+        }
+    </script>
+</body>
+</html>

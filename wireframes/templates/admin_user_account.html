@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Account</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: white; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        
+        .main { padding: 30px; }
+        .main h2 { font-size: 24px; color: #5a5a5a; margin: 0 0 20px; }
+        .search-row { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+        .search-row input { width: 170px; height: 28px; border: 1px solid #777; border-radius: 3px; padding: 0 8px; }
+        .search-btn { background: #000; color: white; border: none; border-radius: 4px; height: 32px; width: 90px; font-weight: bold; cursor: pointer; }
+
+        .table-box { width: 100%; border: 1px solid #777; border-radius: 4px; overflow: hidden; padding-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        thead { background: #d9d9d9; }
+        th { text-align: left; padding: 12px; border-bottom: 1px solid #000; }
+        td { padding: 12px; border-bottom: 1px solid #ccc; font-weight: bold; }
+
+        /* Success Dialog Styling */
+        .flash-success { background: #e6f4ea; border: 1px solid #2e7d32; padding: 15px; color: #2e7d32; margin-top: 20px; display: none; align-items: center; gap: 10px; font-weight: bold; }
+        .check-icon { background: #2e7d32; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+        .status-text { width: 100px; display: inline-block; }
+        .status-active { color: green; font-weight: bold; }
+        .status-deactivated { color: red; font-weight: bold; }
+        
+        .action-btn { background: #000; color: white; border: none; border-radius: 4px; padding: 6px 12px; font-weight: bold; cursor: pointer; margin-right: 4px; }
+        .add-btn { margin: 20px 0 0 10px; background: #2b2b2b; color: white; border: none; border-radius: 6px; padding: 10px 14px; font-weight: bold; cursor: pointer; }
+
+        .switch { position: relative; display: inline-block; width: 38px; height: 20px; }
+        .switch input { display: none; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #aaa; border-radius: 20px; transition: 0.3s; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: 0.3s; }
+        .switch input:checked + .slider { background-color: #333; }
+        .switch input:checked + .slider:before { transform: translateX(18px); }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-box { width: 310px; background: #1f1f1f; color: white; border-radius: 5px; padding: 28px 26px 30px; }
+        .modal-box label { display: block; font-size: 12px; margin: 10px 0 5px; }
+        .modal-box input, .modal-box select { width: 100%; border: none; border-radius: 6px; padding: 8px; height: 30px; box-sizing: border-box; }
+        .modal-actions { display: flex; gap: 8px; margin-top: 25px; justify-content: center; }
+        .white-btn { background: white; color: #333; border-radius: 5px; padding: 8px 14px; cursor: pointer; border: none; font-weight: bold; }
+        .cancel-btn { background: #777; color: white; border: none; border-radius: 5px; padding: 8px 24px; cursor: pointer; }
+        .details-box { background: white; width: 360px; border-radius: 4px; padding: 20px; color: #111; border: 1px solid black;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('auth.admin_accounts') }}" class="active">User Account</a>
+        <a href="{{ url_for('auth.admin_profiles') }}">User Profile</a>
+    </nav>
+
+    <div class="main">
+        <h2>All User Accounts</h2>
+        <div class="search-row">
+            Search by ID: <input type="text"> <button class="search-btn">SEARCH</button>
+        </div>
+
+        <div class="table-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account ID</th>
+                        <th>All Users</th>
+                        <th>Status</th>
+                        <th>Suspend</th>
+                        <th>Update/View Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>001</td>
+                        <td>Chloe Lim</td>
+                        <td><span class="status-text status-active">Active</span></td>
+                        <td><label class="switch"><input type="checkbox" onchange="handleSuspendToggle(this)"><span class="slider"></span></label></td>
+                        <td>
+                            <button class="action-btn" onclick="openUpdateAccountModal('001', 'Chloe Lim', 'chloe_l', '1998-07-22', '101 Woodlands St', 'User Admin')">Edit</button>
+                            <button class="action-btn" onclick="openViewAccountModal('001', 'Chloe Lim', 'chloe_l', '22/07/1998', '101 Woodlands St', 'User Admin')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>002</td>
+                        <td>Rachel Tan</td>
+                        <td><span class="status-text status-active">Active</span></td>
+                        <td><label class="switch"><input type="checkbox" onchange="handleSuspendToggle(this)"><span class="slider"></span></label></td>
+                        <td>
+                            <button class="action-btn" onclick="openUpdateAccountModal('002', 'Rachel Tan', 'rachel_t', '1995-05-20', '123 Orchard Road', 'Fundraiser')">Edit</button>
+                            <button class="action-btn" onclick="openViewAccountModal('002', 'Rachel Tan', 'rachel_t', '20/05/1995', '123 Orchard Road', 'Fundraiser')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>003</td>
+                        <td>David Lim</td>
+                        <td><span class="status-text status-active">Active</span></td>
+                        <td><label class="switch"><input type="checkbox" onchange="handleSuspendToggle(this)"><span class="slider"></span></label></td>
+                        <td>
+                            <button class="action-btn" onclick="openUpdateAccountModal('003', 'David Lim', 'david_l', '1988-11-10', '456 Jurong West', 'Donor')">Edit</button>
+                            <button class="action-btn" onclick="openViewAccountModal('003', 'David Lim', 'david_l', '10/11/1988', '456 Jurong West', 'Donor')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>004</td>
+                        <td>Jayden Tan</td>
+                        <td><span class="status-text status-active">Active</span></td>
+                        <td><label class="switch"><input type="checkbox" onchange="handleSuspendToggle(this)"><span class="slider"></span></label></td>
+                        <td>
+                            <button class="action-btn" onclick="openUpdateAccountModal('004', 'Jayden Tan', 'jayden_t', '1992-03-15', '789 Tampines Ave', 'Platform Management')">Edit</button>
+                            <button class="action-btn" onclick="openViewAccountModal('004', 'Jayden Tan', 'jayden_t', '15/03/1992', '789 Tampines Ave', 'Platform Management')">View</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="add-btn" onclick="openCreateAccountModal()">+ Add New User Account</button>
+        </div>
+
+        <!-- Success Dialog -->
+        <div id="flash-msg" class="flash-success">
+            <div class="check-icon">✓</div>
+            <span id="flash-text">Success: "User account added successfully"</span>
+        </div>
+    </div>
+
+    <!-- Create Modal -->
+    <div class="modal-overlay" id="createAccountModal">
+        <div class="modal-box">
+            <h2 style="text-align:center">Create User Account</h2>
+            <form>
+                <label>Account ID</label><input type="text">
+                <label>Name</label><input type="text">
+                <label>Username</label><input type="text">
+                <label>Password</label><input type="password">
+                <label>Birthday</label><input type="date">
+                <label>Address</label><input type="text">
+                <label>Profile</label>
+                <select>
+                    <option>Select</option>
+                    <option>User Admin</option>
+                    <option>Fundraiser</option>
+                    <option>Donor</option>
+                    <option>Platform Management</option>
+                </select>
+                <div class="modal-actions">
+                    <button type="button" class="white-btn" onclick="submitCreate()">Create Account</button>
+                    <button type="button" class="cancel-btn" onclick="closeCreateAccountModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Modal -->
+    <div class="modal-overlay" id="updateAccountModal">
+        <div class="modal-box">
+            <h2 style="text-align:center">Update User Account</h2>
+            <form id="updateForm">
+                <label>Account ID</label><input type="text" id="updId">
+                <label>Name</label><input type="text" id="updName">
+                <label>Username</label><input type="text" id="updUser">
+                <label>Password</label><input type="password" value="********">
+                <label>Birthday</label><input type="date" id="updBday">
+                <label>Address</label><input type="text" id="updAddr">
+                <label>Profile</label>
+                <select id="updProfile">
+                    <option>User Admin</option>
+                    <option>Fundraiser</option>
+                    <option>Donor</option>
+                    <option>Platform Management</option>
+                </select>
+                <div class="modal-actions">
+                    <button type="button" class="white-btn" onclick="submitUpdate()">Update Account</button>
+                    <button type="button" class="cancel-btn" onclick="closeUpdateAccountModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Modal -->
+    <div class="modal-overlay" id="viewAccountModal">
+        <div class="details-box">
+            <h3>Account Details:</h3>
+            <p>Account ID: <span id="viewId"></span></p>
+            <p>Name: <span id="viewName"></span></p>
+            <p>Username: <span id="viewUser"></span></p>
+            <p>Birthday: <span id="viewBday"></span></p>
+            <p>Address: <span id="viewAddr"></span></p>
+            <p>Profile: <span id="viewProfile"></span></p>
+            <div style="text-align:right"><button class="search-btn" onclick="closeViewAccountModal()">Close</button></div>
+        </div>
+    </div>
+
+    <script>
+        function showFlash(text) {
+            const flash = document.getElementById('flash-msg');
+            document.getElementById('flash-text').innerText = 'Success: "' + text + '"';
+            flash.style.display = 'flex';
+            setTimeout(() => { flash.style.display = 'none'; }, 3000);
+        }
+
+        function submitCreate() {
+            closeCreateAccountModal();
+            showFlash("User account added successfully");
+        }
+
+        function submitUpdate() {
+            closeUpdateAccountModal();
+            showFlash("User account updated successfully");
+        }
+
+        function openCreateAccountModal() { document.getElementById("createAccountModal").style.display = "flex"; }
+        function closeCreateAccountModal() { document.getElementById("createAccountModal").style.display = "none"; }
+        
+        function openUpdateAccountModal(id, name, user, bday, addr, profile) {
+            document.getElementById("updId").value = id;
+            document.getElementById("updName").value = name;
+            document.getElementById("updUser").value = user;
+            document.getElementById("updBday").value = bday;
+            document.getElementById("updAddr").value = addr;
+            document.getElementById("updProfile").value = profile;
+            document.getElementById("updateAccountModal").style.display = "flex";
+        }
+        function closeUpdateAccountModal() { document.getElementById("updateAccountModal").style.display = "none"; }
+        
+        function openViewAccountModal(id, name, user, bday, addr, profile) {
+            document.getElementById("viewId").innerText = id;
+            document.getElementById("viewName").innerText = name;
+            document.getElementById("viewUser").innerText = user;
+            document.getElementById("viewBday").innerText = bday;
+            document.getElementById("viewAddr").innerText = addr;
+            document.getElementById("viewProfile").innerText = profile;
+            document.getElementById("viewAccountModal").style.display = "flex";
+        }
+        function closeViewAccountModal() { document.getElementById("viewAccountModal").style.display = "none"; }
+        
+        function handleSuspendToggle(toggle) {
+            let row = toggle.closest("tr");
+            let status = row.querySelector(".status-text");
+            if (toggle.checked) {
+                status.innerText = "Deactivated"; 
+                status.classList.replace("status-active", "status-deactivated");
+            } else {
+                status.innerText = "Active"; 
+                status.classList.replace("status-deactivated", "status-active");
+            }
+        }
+    </script>
+</body>
+</html>

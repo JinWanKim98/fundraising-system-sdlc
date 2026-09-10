@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create User Profile</title>
+</head>
+<body>
+    <h1>Create User Profile</h1>
+    {% with messages = get_flashed_messages(with_categories = true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p><strong>{{ category }}:</strong> {{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="post">
+        <div>
+            <label for="profileName">Profile Name</label>
+            <input
+                type="text"
+                id="profileName"
+                name="profileName"
+            >
+        </div>
+
+        <div>
+            <label for="profileDescription">Profile Description</label>
+            <input
+                type="text"
+                id="profileDescription"
+                name="profileDescription"
+            >
+        </div>
+
+        <button type="submit">Create</button>
+    </form>
+
+    <p>
+        <a href="{{ url_for('user_profile.list_profiles') }}">Back to Profiles</a>
+    </p>
+</body>
+</html>

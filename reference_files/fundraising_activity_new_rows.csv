@@ -1,0 +1,5 @@
+activity_id,account_id,category_id,activity_name,activity_desc,funding_goal,funding_current,activity_status,start_date,end_date
+203,109,3,Community Kitchen Support,Helping fund weekly meals for low-income families,8000,1200,ongoing,2026-04-18,2026-07-30
+204,109,4,Flood Recovery Essentials,Providing cleanup kits and temporary supplies,15000,3200,ongoing,2026-04-20,2026-08-01
+205,110,2,Scholarship for STEM Students,Supporting tuition for two students,12000,4500,ongoing,2026-04-22,2026-08-31
+206,110,5,Youth Sports Equipment Drive,Buying gear for community youth teams,6000,900,ongoing,2026-04-25,2026-07-20

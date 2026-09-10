@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Activities</title>
+</head>
+<body>
+    <h1>All Fundraising Activities</h1>
+
+    {% if activities %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Account</th>
+                    <th>Category</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Goal</th>
+                    <th>Current</th>
+                    <th>Status</th>
+                    <th>Start</th>
+                    <th>End</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in activities %}
+                <tr>
+                    <td>{{ a.activityId }}</td>
+                    <td>{{ a.accountId }}</td>
+                    <td>{{ a.categoryId }}</td>
+                    <td>{{ a.activityName }}</td>
+                    <td>{{ a.activityDescription }}</td>
+                    <td>{{ a.fundingGoal }}</td>
+                    <td>{{ a.fundingCurrent }}</td>
+                    <td>{{ a.activityStatus }}</td>
+                    <td>{{ a.startDate }}</td>
+                    <td>{{ a.endDate }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No activities available.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('fundraising_activity.list_activities') }}">Back</a></p>
+</body>
+</html>

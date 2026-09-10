@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Activity Insights</title>
+</head>
+<body>
+
+<h1>Fundraising Activity Insights</h1>
+
+{% if activities %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Activity ID</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Funding</th>
+                <th>Views</th>
+                <th>Favourites</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for a in activities %}
+            <tr>
+                <td>{{ a.activityId }}</td>
+                <td>{{ a.activityName }}</td>
+                <td>{{ a.activityStatus }}</td>
+                <td>{{ a.fundingCurrent }} / {{ a.fundingGoal }}</td>
+                <td>{{ a.viewCount }}</td>
+                <td>{{ a.favouriteCount }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No activities found.</p>
+{% endif %}
+
+<p><a href="{{ url_for('fundraising_activity.list_activities') }}">Back</a></p>
+
+</body>
+</html>

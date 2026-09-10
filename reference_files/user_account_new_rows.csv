@@ -1,0 +1,8 @@
+account_id,full_name,username,password,DOB,address,contact_num,profile_id,account_status
+104,Olivia Chen,oliviachen,pass104,2000-03-18,12 Bishan Street 11,81112233,3,ACTIVE
+105,Ethan Wong,ethanwong,pass105,1998-07-09,27 Clementi Avenue 2,82223344,3,ACTIVE
+106,Grace Koh,gracekoh,pass106,2001-12-01,9 Sengkang East Way,83334455,3,ACTIVE
+107,Noah Tan,noahtan,pass107,1997-05-22,44 Yishun Ring Road,84445566,3,ACTIVE
+108,Chloe Lim,chloelim,pass108,2002-09-30,18 Pasir Ris Drive 6,85556677,3,ACTIVE
+109,Daniel Lee,daniellee,pass109,1996-11-14,63 Hougang Avenue 8,86667788,2,ACTIVE
+110,Sophia Ng,sophiang,pass110,1995-04-27,71 Woodlands Street 13,87778899,2,ACTIVE

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View User Profiles</title>
+</head>
+<body>
+    <h1>View User Profiles</h1>
+    {% if profiles %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Profile ID</th>
+                    <th>Profile Name</th>
+                    <th>Profile Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for profile in profiles %}
+                    <tr>
+                        <td>{{ profile.profileId }}</td>
+                        <td>{{ profile.profileName }}</td>
+                        <td>{{ profile.profileDescription }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% with messages = get_flashed_messages(with_categories = true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p><strong>{{ category }}:</strong> {{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <p>
+        <a href="{{ url_for('user_profile.create_profile') }}">Create User Profile</a>
+    </p>
+    <p>
+        <a href="{{ url_for('user_profile.update_profile') }}">Update User Profile</a>
+    </p>
+    <p>
+        <a href="{{ url_for('user_profile.delete_profile') }}">Delete User Profile</a>
+    </p>
+    <p>
+        <a href="{{ url_for('user_profile.list_profiles') }}">Back to Profiles</a>
+    </p>
+</body>
+</html>

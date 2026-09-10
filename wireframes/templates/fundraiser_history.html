@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Completed Activities History</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #fff; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .content { padding: 30px; }
+        .filter-section { border-bottom: 1px solid #000; padding-bottom: 20px; margin-bottom: 20px; line-height: 2.5; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #d9d9d9; padding: 12px; border: 1px solid #000; text-align: left; }
+        td { padding: 12px; border: 1px solid #000; }
+        .btn-black { background: black; color: white; padding: 8px 20px; text-decoration: none; border: none; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('auth.fundraiser_activities') }}">My Activities</a>
+        <a href="{{ url_for('auth.fundraiser_history') }}" class="active">History</a>
+        <a href="{{ url_for('auth.fundraiser_analytics') }}">Analytics</a>
+    </nav>
+    <div class="content">
+        <h3>Completed Activities History</h3>
+        <div class="filter-section">
+            Search: <input type="text" style="width: 300px;"> 
+            <button style="background: black; color: white;">SEARCH</button><br>
+            Filters: Category: 
+            <select>
+                <option>All</option>
+                <option>Service</option>
+                <option>Disaster</option>
+            </select>
+            Date From: <input type="date" id="dateFrom"> 
+            To: <input type="date" id="dateTo">
+        </div>
+        <table>
+            <tr><th>Date Completed</th><th>Activity Name</th><th>Category</th><th>Performance Report</th></tr>
+            <tr>
+                <td>12/01/26</td><td>Winter Shelter Fund</td><td>Service</td>
+                <td><a href="{{ url_for('auth.fundraiser_performance') }}?type=winter" class="btn-black">View</a></td>
+            </tr>
+            <tr>
+                <td>05/02/26</td><td>Earthquake Relief</td><td>Disaster</td>
+                <td><a href="{{ url_for('auth.fundraiser_performance') }}?type=earthquake" class="btn-black">View</a></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        // Logic to ensure "To" date updates based on "From" date selection
+        const dateFrom = document.getElementById('dateFrom');
+        const dateTo = document.getElementById('dateTo');
+
+        dateFrom.addEventListener('change', function() {
+            if (dateFrom.value) {
+                dateTo.min = dateFrom.value;
+                // Optional: set the 'To' date to match 'From' date initially if empty
+                if (!dateTo.value) {
+                    dateTo.value = dateFrom.value;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

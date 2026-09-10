@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Favorites</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        .header { background: #e0e0e0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; }
+        .content { padding: 30px; }
+        .toolbar { margin-bottom: 20px; display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #d9d9d9; border: 1px solid black; padding: 12px; text-align: left; }
+        td { border: 1px solid black; padding: 12px; }
+        .search-form { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: bold; }
+        .search-form input { padding: 7px; border: 1px solid #777; }
+        .progress-container { width: 250px; background: #d9d9d9; height: 15px; border: 1px solid black; margin-top: 10px; }
+        .btn-black { background: black; color: white; padding: 8px 20px; text-decoration: none; border: none; cursor: pointer; border-radius: 4px; }
+        .btn-view { background: black; color: white; padding: 4px 10px; text-decoration: none; border: none; cursor: pointer; border-radius: 4px; position: relative; top: 5px;}
+        .btn-outline { background: white; color: black; padding: 8px 20px; text-decoration: none; border: 1px solid black; cursor: pointer; border-radius: 4px; }
+        .flash-success { background: #e6f4ea; border: 1px solid #2e7d32; padding: 15px; color: #2e7d32; margin-top: 20px; display: none; align-items: center; gap: 10px; font-weight: bold; }
+        .check-icon { background: #2e7d32; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .message { padding: 12px; margin-bottom: 16px; border: 1px solid #777; font-weight: bold; background: white; }
+        .message.success { background: #e6f4ea; color: #2e7d32; border-color: #2e7d32; }
+        .message.error { background: #fdecea; color: #c62828; border-color: #c62828; }
+        .status-ongoing { color: green; font-weight: bold; }
+        .status-completed { color: #1a4f8f; font-weight: bold; }
+        .status-expired { color: #8a5a00; font-weight: bold; }
+        .status-cancelled { color: #b00020; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session.get('user_name', 'Guest') }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('fundraising_activity.list_activities') }}">Browse Activities</a>
+        <a href="{{ url_for('favourites_list.view_favourites_list') }}" class="active">Favorites</a>
+        <a href="{{ url_for('fundraising_activity.view_my_donations') }}">History</a>
+    </nav>
+    <div class="content">
+        <h3>My Favorites List</h3>
+        {% with messages = get_flashed_messages(with_categories = true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="toolbar">
+            <form class="search-form" method="get" action="{{ url_for('favourites_list.view_favourites_list') }}">
+                <label for="search"><b>Search:</b></label>
+                <input
+                    type="text"
+                    id="search"
+                    name="search"
+                    placeholder="Name or description"
+                    value="{{ search_term }}"
+                >
+                <button class="btn btn-black" type="submit">SEARCH</button>
+                <button 
+                    type="button"
+                    class="btn-outline"
+                    onclick="window.location.href='{{ url_for('favourites_list.view_favourites_list') }}'">
+                    CLEAR
+                </button>
+            </form>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Activity Id</th>
+                    <th>Activity Name</th>
+                    <th>Activity Description</th>
+                    <th>Activity Status</th>
+                    <th>Current Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in favourites %}
+                <tr>
+                    <td>
+                        {{ activity.activityId }}
+                    </td>
+                    <td>
+                        {{ activity.activityName }}
+                    </td>
+                    <td>
+                        {{ activity.activityDescription }}
+                    </td>
+                    <td>
+                        <strong class="status-{{ activity.activityStatus|lower }}">{{ activity.activityStatus }}</strong>
+                    </td>
+                    <td>
+                        <strong>{{ ((activity.fundingCurrent / activity.fundingGoal) * 100)|round|int }}%</strong> (${{ "{:,.0f}".format(activity.fundingCurrent) }} / ${{ "{:,.0f}".format(activity.fundingGoal) }})
+                        <div class="progress-container">
+                            <div style="background: black; width: {{ ((activity.fundingCurrent / activity.fundingGoal) * 100)|round|int }}%; height: 100%;"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div id="statusMessage" class="flash-success">
+            <div class="check-icon">✓</div>
+            <span id="statusText">Success: "Removed from favorites successfully"</span>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('status');
+        const messageBox = document.getElementById('statusMessage');
+        const messageText = document.getElementById('statusText');
+
+        if (status === 'unfavorited') {
+            messageBox.style.display = 'flex';
+            setTimeout(() => { messageBox.style.display = 'none'; }, 3000); // 3-second timeout
+        } else if (status === 'donated') {
+            messageText.innerText = 'Success: "Your donation has been processed successfully"';
+            messageBox.style.display = 'flex';
+            setTimeout(() => { messageBox.style.display = 'none'; }, 3000); // 3-second timeout
+        }
+    </script>
+</body>
+</html>

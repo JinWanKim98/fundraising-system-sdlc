@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Favourite Activities</title>
+</head>
+<body>
+    <h1>Search Favourite Activities</h1>
+
+    {% with messages = get_flashed_messages(with_categories = true) %}
+        {% for category, message in messages %}
+            <p><strong>{{ category }}:</strong> {{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="get" action="{{ url_for('favourites_list.search_favourites_list') }}">
+        <input type="text" name="search" placeholder="Search by name or description" value="{{ search_term }}" style="width:300px;">
+        <button type="submit">Search</button>
+    </form>
+
+    <p>
+        <a href="{{ url_for('favourites_list.view_favourites_list') }}">Back to Favourites</a>
+    </p>
+
+    {% if favourites %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Activity ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Current</th>
+                    <th>Goal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in favourites %}
+                <tr>
+                    <td>{{ f.activityId }}</td>
+                    <td>{{ f.activityName }}</td>
+                    <td>{{ f.activityDescription }}</td>
+                    <td>{{ f.categoryId }}</td>
+                    <td>{{ f.activityStatus }}</td>
+                    <td>{{ f.fundingCurrent }}</td>
+                    <td>{{ f.fundingGoal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif search_term %}
+        <p>No matching favourite activities found.</p>
+    {% endif %}
+
+</body>
+</html>

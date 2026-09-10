@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fundraiser Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+        .header { background: #ddd; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background: #fff; border-bottom: 2px solid #000; padding: 0 20px; }
+        nav a { text-decoration: none; color: black; padding: 15px; display: inline-block; font-weight: bold; }
+        nav a.active { border-bottom: 4px solid black; background: #eee; }
+        .content { padding: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #ddd; padding: 10px; border: 1px solid #ccc; text-align: left; }
+        td { padding: 10px; border: 1px solid #ccc; }
+        .btn { padding: 5px 15px; cursor: pointer; border: none; border-radius: 4px; text-decoration: none; font-size: 14px; }
+        .btn-black { background: black; color: white; }
+        .btn-view { background: #000; color: white; }
+        .btn-edit { background: #333; color: white; }
+        .btn-delete { background: red; color: white; }
+        .flash-success { 
+            background: #e6f4ea; 
+            border: 1px solid #2e7d32; 
+            padding: 15px; 
+            color: #2e7d32; 
+            margin-top: 20px; 
+            display: none; 
+            align-items: center; 
+            gap: 10px; 
+            font-weight: bold; 
+        }
+        .check-icon { 
+            background: #2e7d32; 
+            color: white; 
+            border-radius: 50%; 
+            width: 20px; 
+            height: 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 12px; 
+        }
+
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index: 1000; }
+        .modal-view { background:white; padding: 25px; border-radius:12px; width:550px; text-align:left; border: 1px solid #000; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .modal-view h3 { margin: 0 0 5px 0; font-size: 24px; font-weight: bold; }
+        .modal-view .status-text { color: green; font-weight: bold; font-size: 18px; margin-bottom: 15px; }
+        .modal-view .amount-row { display: flex; justify-content: space-between; align-items: center; font-weight: bold; margin-bottom: 5px; }
+        .modal-view .progress-container { background:#ccc; height:25px; width:100%; border-radius: 8px; overflow: hidden; border: 1px solid #000; margin-bottom: 15px; }
+        .modal-view .progress-fill { background:black; width:0%; height:100%; transition: width 0.3s ease; }
+        .modal-view p { margin: 8px 0; font-size: 15px; }
+        .modal-view .section-label { font-weight: bold; }
+        .modal-view .desc-text { line-height: 1.4; margin-bottom: 15px; }
+        .footer-btn { text-align: right; margin-top: 10px; }
+        .btn-outline { background: white; color: black; border: 1px solid black; padding: 8px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .modal-simple { background:white; padding:20px; border-radius:8px; width:400px; text-align:center; border: 1px solid #000;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Online Fundraising System</h2>
+        <div>Welcome, {{ session['username'] }} | <a href="{{ url_for('auth.logout') }}">Logout</a></div>
+    </div>
+    <nav>
+        <a href="{{ url_for('auth.fundraiser_activities') }}" class="active">My Activities</a>
+        <a href="{{ url_for('auth.fundraiser_history') }}">History</a>
+        <a href="{{ url_for('auth.fundraiser_analytics') }}">Analytics</a>
+    </nav>
+    <div class="content">
+        <h3>My Fundraising Activities</h3>
+        <div style="margin-bottom: 20px; display:flex; justify-content: space-between;">
+            <div>Search by ID: <input type="text"> <button style="background: black; color: white;">SEARCH</button></div>
+            <a href="{{ url_for('auth.fundraiser_create', mode='Create') }}" class="btn btn-black">+ Create New</a>
+        </div>
+        <table>
+            <tr><th>ID</th><th>Activity Title</th><th>Status</th><th>Actions</th></tr>
+            <tr>
+                <td>001</td><td>Save the Forests</td><td style="color:green; font-weight:bold;">Active</td>
+                <td>
+                    <button class="btn btn-view" onclick="openModal('Save the Forests', 'Active', '15,000', '25,000', 'Environment', '31/12/2026', 'A community-driven initiative to protect endangered forest areas...', 'Rachel Tan', '+65 9876 4321')">View</button>
+                    <a href="{{ url_for('auth.fundraiser_edit', id='001', mode='Update') }}" class="btn btn-edit">Edit</a>
+                    <button class="btn btn-delete" onclick="openDeleteModal('Save the Forests')">Delete</button>
+                </td>
+            </tr>
+            <tr>
+                <td>002</td><td>Clean Water Project</td><td style="color:green; font-weight:bold;">Active</td>
+                <td>
+                    <button class="btn btn-view" onclick="openModal('Clean Water Project', 'Active', '8,000', '20,000', 'Infrastructure', '15/08/2026', 'Providing sustainable water filtration systems...', 'John Doe', '+65 1234 5678')">View</button>
+                    <a href="{{ url_for('auth.fundraiser_edit', id='002', mode='Update') }}" class="btn btn-edit">Edit</a>
+                    <button class="btn btn-delete" onclick="openDeleteModal('Clean Water Project')">Delete</button>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Flash Message Placeholder -->
+        <div id="flash-msg" class="flash-success">
+            <div class="check-icon">✓</div>
+            <span id="flash-text"></span>
+        </div>
+    </div>
+
+    <!-- Modals (Hidden) -->
+    <div id="detailsModal" class="modal-overlay">
+        <div class="modal-view">
+            <h3 id="view-title">FRA Details</h3>
+            <div id="view-status" class="status-text"></div>
+            <div class="amount-row"><span>Amount Collected</span><span id="view-amount"></span></div>
+            <div class="progress-container"><div id="view-progress" class="progress-fill"></div></div>
+            <p><span class="section-label">Category:</span> <span id="view-category"></span></p>
+            <p><span class="section-label">End Date:</span> <span id="view-date"></span></p>
+            <p class="section-label">Description</p>
+            <p id="view-description" class="desc-text"></p>
+            <div class="account-section">
+                <p class="section-label">Link Fundraiser Account Details</p>
+                <p>Fundraiser Name: <span id="view-name"></span></p>
+                <p>Fundraiser Phone: <span id="view-phone"></span></p>
+            </div>
+            <div class="footer-btn"><button class="btn-outline" onclick="closeModal('detailsModal')">Close</button></div>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-simple">
+            <h3>Are you sure?</h3>
+            <p id="delete-text"></p>
+            <button class="btn btn-black" onclick="confirmDelete()">Yes, Delete</button>
+            <button class="btn" style="background:#ccc; margin-left: 10px;" onclick="closeModal('deleteModal')">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Check for success parameters on load
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('success')) {
+                const mode = urlParams.get('mode') || 'Processed';
+                showFlashMessage(mode);
+                
+                // Remove parameter from URL to prevent message appearing on refresh
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        function showFlashMessage(mode) {
+            const flashMsg = document.getElementById('flash-msg');
+            const flashText = document.getElementById('flash-text');
+            
+            if (mode.toLowerCase() === 'create') {
+                flashText.innerText = 'Success: "Activity created successfully"';
+            } else if (mode.toLowerCase() === 'delete') {
+                flashText.innerText = 'Success: "Activity deleted successfully"';
+            } else {
+                flashText.innerText = 'Success: "Activity updated successfully"';
+            }
+            
+            flashMsg.style.display = 'flex';
+
+            // Timeout set to 3 seconds
+            setTimeout(function() {
+                flashMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        function openModal(title, status, collected, goal, category, date, desc, name, phone) { 
+            document.getElementById('view-title').innerText = "FRA Details: " + title;
+            document.getElementById('view-status').innerText = status;
+            document.getElementById('view-amount').innerText = "$" + collected + " / $" + goal;
+            document.getElementById('view-category').innerText = category;
+            document.getElementById('view-date').innerText = date; 
+            document.getElementById('view-description').innerText = desc;
+            document.getElementById('view-name').innerText = name;
+            document.getElementById('view-phone').innerText = phone;
+            
+            let percent = (parseInt(collected.replace(/,/g, '')) / parseInt(goal.replace(/,/g, ''))) * 100;
+            document.getElementById('view-progress').style.width = percent + "%";
+            document.getElementById('detailsModal').style.display = 'flex'; 
+        }
+
+        function openDeleteModal(title) {
+            document.getElementById('delete-text').innerText = 'This will permanently delete "' + title + '"';
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function confirmDelete() {
+            closeModal('deleteModal');
+            showFlashMessage('delete');
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    </script>
+</body>
+</html>
