@@ -1,6 +1,6 @@
 ## Online Fundraising Platform — one SDLC cycle, six people
 
-**Six-person group project (CSIT 314 Software Development Methodologies).** The team split into a
+**Six-person group project.** The team split into a
 programming team and a documentation team, and I was on the documentation side. **My part: user
 stories #37–42; BCE class and sequence diagrams for 14 of the 42 use cases (#27–37 and #40–42); use
 case diagrams and descriptions; wireframes; and the Gantt chart.**
