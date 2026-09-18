@@ -8,10 +8,12 @@ from boundary.access_control import login_required, roles_required, PLATFORM_MAN
 fundraising_category_bp = Blueprint("fundraising_category", __name__)
 
 @fundraising_category_bp.route("/categories/home")
+@roles_required(PLATFORM_MANAGEMENT)
 def home():
     return redirect(url_for('fundraising_category.main_page'))
 
 @fundraising_category_bp.route("/categories")
+@roles_required(PLATFORM_MANAGEMENT)
 def main_page():
     search_term = request.args.get("search", "")
     if "search" in request.args:
@@ -53,6 +55,7 @@ def create_category():
     return render_template("categories/category_create.html")
 
 @fundraising_category_bp.route("/categories/view")
+@roles_required(PLATFORM_MANAGEMENT)
 def view_category():
     controller = view_fundraising_category_controller()
     categories = controller.viewFundraisingCategory()

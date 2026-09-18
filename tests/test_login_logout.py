@@ -13,12 +13,14 @@ class TestLoginLogout(unittest.TestCase):
         cls.test_db_path = Path(cls.temp_dir.name) / "test_fundraising.db"
         shutil.copy("fundraising.db", cls.test_db_path)
 
+        cls.original_db_path = db.DB_PATH
         db.DB_PATH = cls.test_db_path
         cls.app = create_app()
         cls.app.config["TESTING"] = True
 
     @classmethod
     def tearDownClass(cls):
+        db.DB_PATH = cls.original_db_path
         cls.temp_dir.cleanup()
 
     def setUp(self):

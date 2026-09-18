@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional, Tuple
 from entity.platform_report import PlatformReport
 
@@ -9,12 +10,22 @@ class view_platform_report_controller:
         if not selectedDate:
             return False, "Date is required.", None
 
+        try:
+            selectedDate = date.fromisoformat(selectedDate).isoformat()
+        except ValueError:
+            return False, "Invalid date.", None
+
         report = PlatformReport.generateDailyReport(selectedDate)
         return True, "Daily report generated successfully", report
 
     def generateWeeklyReport(self, dateFrom: str, dateTo: str) -> Tuple[bool, str, Optional[PlatformReport]]:
         if not dateFrom or not dateTo:
             return False, "Date range is required.", None
+        try:
+            dateFrom = date.fromisoformat(dateFrom).isoformat()
+            dateTo = date.fromisoformat(dateTo).isoformat()
+        except ValueError:
+            return False, "Invalid date range.", None
         if dateFrom > dateTo:
             return False, "Invalid date range.", None
 
@@ -33,5 +44,7 @@ class view_platform_report_controller:
 
         if monthValue < 1 or monthValue > 12:
             return False, "Invalid month.", None
+        if not 1 <= yearValue <= 9999:
+            return False, "Invalid year.", None
         report = PlatformReport.generateMonthlyReport(monthValue, yearValue)
         return True, "Monthly report generated successfully", report
