@@ -2,6 +2,12 @@
 
 Six-person CSIT 314 group project at UOW (SIM Singapore), built with Flask and SQLite across four sprints. **My original role was on the documentation team**, not the Python back-end team.
 
+## Tech stack
+
+![HTML](https://img.shields.io/badge/HTML-E34F26?style=flat&logo=html5&logoColor=white) ![CSS](https://img.shields.io/badge/CSS-663399?style=flat&logo=css&logoColor=white) ![Flask](https://img.shields.io/badge/Flask-333333?style=flat&logo=flask&logoColor=white) ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
+
+**My contribution:** requirements, BCE diagrams and shared HTML/CSS wireframes/templates. Flask and SQLite describe the team application; the original Python back end was implemented by the programming team.
+
 ## My contribution
 
 | Deliverable | My scope |
